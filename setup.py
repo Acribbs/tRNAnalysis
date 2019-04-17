@@ -35,7 +35,7 @@ IS_OSX = sys.platform == 'darwin'
 ########################################################################
 ########################################################################
 # collect CGAT version
-sys.path.insert(0, "tRNA-mapper")
+sys.path.insert(0, "trnamapper")
 import version
 
 version = version.__version__
@@ -50,7 +50,7 @@ if major < 3:
     raise SystemExit("""cgat-showcase requires Python 3 or later.""")
 
 
-cgat_package_dirs = {'tRNA-mapper': 'tRNA-mapper'}
+cgat_package_dirs = {'trnamapper': 'trnamapper'}
 
 ##########################################################
 ##########################################################
@@ -86,7 +86,7 @@ setup(
     package_dir=cgat_package_dirs,
     include_package_data=True,
     entry_points={
-        'console_scripts': ['tRNA-mapper = tRNA-mapper.entry:main']
+        'console_scripts': ['trnamapper = trnamapper.entry:main']
     },
     # other options
     zip_safe=False,

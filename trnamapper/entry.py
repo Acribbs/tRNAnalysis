@@ -1,20 +1,20 @@
 '''
-cgatshowcase.py - Computational Genomics Analysis Workflow
-==========================================================
+tRNA-mapper.py - tRNA-mapper
+============================
 
 :Tags: Genomics
 
 To use a specific workflow, type::
 
-    cgatshowcase <workflow> [workflow options] [workflow arguments]
+    tRNA-mapper <workflow> [workflow options] [workflow arguments]
 
 For this message and a list of available keywords type::
 
-    cgatshowcase --help
+    tRNA-mapper --help
 
 To get help for a specify workflow, type::
 
-    cgatshowcase <workflow> --help
+     tRNA-mapper <workflow> --help
 '''
 
 import os
@@ -22,7 +22,7 @@ import sys
 import re
 import glob
 import imp
-import cgatshowcase
+import trnamapper
 
 
 def printListInColumns(l, ncolumns):
@@ -60,7 +60,7 @@ def main(argv=None):
     argv = sys.argv
 
     # paths to look for pipelines:
-    path = os.path.abspath(os.path.dirname(cgatshowcase.__file__))
+    path = os.path.abspath(os.path.dirname(trnamapper.__file__))
     relpath = os.path.abspath("../src")
 
     paths = [path, relpath]
