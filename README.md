@@ -1,4 +1,4 @@
-trnamapper
+tRNAnalysis
 
 Installation
 ------------
