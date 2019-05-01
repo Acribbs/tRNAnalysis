@@ -1,0 +1,19 @@
+name: trnanalysis
+
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+
+dependencies:
+ - python
+ - cgat-apps
+ - cgatcore
+ - pandas
+ - pysam
+ - ruffus
+ - trnamapper
+ - r-base
+ - r-ggplot2
+ - r-optparse
+ - r-reshape2
