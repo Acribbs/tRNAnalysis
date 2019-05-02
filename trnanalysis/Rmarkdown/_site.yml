@@ -1,0 +1,32 @@
+name: tRNAnalysis
+navbar:
+  title: Analysis of tRNA
+  right:
+  - text: Home
+    href: index.html
+  - text: QC-report
+    icon: fa-link
+    href: QC_report.html
+  - text: 
+    icon: fa-link
+    href: DE.html
+
+output:
+  html_document:
+    css: style.css
+    fig_caption: yes
+    theme: yeti
+    highlight: textmate
+    toc: yes
+    toc_depth: 2
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+    lib_dir: site_libs
+    self_contained: no
+exclude:
+- rds
+- counts
+- expdata
+- '*.R'
+output_dir: Final_report

@@ -45,6 +45,11 @@ PARAMS = P.get_parameters(
      "../pipeline.yml",
      "pipeline.yml"])
 
+PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
+RMD_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "Rmarkdown"))
+
 ###########################################################
 # Download the gff of rna types from ucsc
 ###########################################################
@@ -80,8 +85,8 @@ SEQUENCEFILES_REGEX = r"(\S+).(?P<suffix>fastq.gz)"
 
 @follows(mkdir("fastqc_pre.dir"))
 @transform(INPUT_FORMATS,
-           suffix(".fastq.gz"),
-           r"fastqc_pre.dir/\1.fastq")
+           regex("(\S+).fastq.gz"),
+           r"fastqc_pre.dir/\1_fastqc.html")
 def fastqc_pre(infile, outfile):
     """
     Runs fastQC on each input file
@@ -169,7 +174,7 @@ def map_with_bowtie(infiles, outfile):
     fastq, genome = infiles
     tmp_fastq = P.get_temp_filename(".")
     temp_file = P.get_temp_filename(".")
-    genome = genome.replace(".fa", "")
+    #genome = genome.replace(".fa", "")
 
     statement = """gzip -dc %(fastq)s > %(tmp_fastq)s && bowtie -k 10 -v 2 --best --strata --sam  %(genome)s  %(tmp_fastq)s 2> %(outfile)s_bowtie.log | samtools view -bS |
                    samtools sort -T %(temp_file)s -o %(outfile)s &&
@@ -381,20 +386,40 @@ def genome_coverage(infiles, outfile):
 
     statement = """bedtools genomecov -ibam %(infile)s -g %(genome)s > %(outfile)s"""
 
-# Maybe should use hg38_mature.fa instead, would have to add input from add_cca_tail
+# Maybe should use hg38_mature.fa instead, would  add input from add_cca_tail
 # should use -d to look at every position
     P.run(statement)
 
 ################################################
 # Perform mapping of tRNA's as set out in Hoffmann et al 2018
 ################################################
-## Using if else statements
+
+@active_if(PARAMS['trna_scan_load'])
+@follows(mkdir("tRNAscan_load.dir"))
+@originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
+def trna_scan_load(outfile):
+    """ If already downloaded trna nuclear genome from http://gtrnadb.ucsc.edu/index.html """
+
+    trna_folder = os.path.join(PARAMS['trna_scan_path'], PARAMS['trna_scan_folder'] + ".tar.gz")
+    genome = PARAMS['trna_scan_folder']
+    trna_file = "tRNAscan_load.dir/" + genome  + "-detailed.out"
+    tmp_genome = P.get_temp_filename(".")
+
+    statement = """ tar -xzf %(trna_folder)s -C tRNAscan_load.dir && 
+    cut -f1-9,16 %(trna_file)s | sed 1,3d > %(tmp_genome)s && 
+    awk -F"\\t" '{ $10 = ($10 == "pseudo" ? $10 : "") } 1' OFS=, %(tmp_genome)s | sed 's/,/\\t/g' > %(outfile)s   
+    """
+
+    P.run(statement)
+    os.unlink(tmp_genome)
+  
+
+@active_if(not PARAMS['trna_scan_load'])
 @follows(mkdir("tRNA-mapping.dir"))
 @originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
 def trna_scan_nuc(outfile):
+    """Scans genome using tRNAscanSE to identify nuclear tRNA"""
     if( PARAMS['index_run']):
-        """Scans genome using tRNAscanSE to identify nuclear tRNA"""
-
 
         genome = os.path.join(PARAMS['genome_dir'], PARAMS['genome'] + ".fa")
 
@@ -408,9 +433,11 @@ def trna_scan_nuc(outfile):
         indexed_genome = os.path.join(PARAMS['index_genome_dir'], PARAMS['index_genome'] + ".nuc.csv")
         os.symlink(indexed_genome, 'tRNA-mapping.dir/tRNAscan.nuc.csv')
 # softlink to location of nuc.csv file
+# Need option if downloaded from database
 
-
-@transform(trna_scan_nuc,
+@follows(trna_scan_load)
+@follows(trna_scan_nuc)
+@transform(["tRNA-mapping.dir/tRNAscan.nuc.csv"],
            regex("tRNA-mapping.dir/(\S+).nuc.csv"),
            r"tRNA-mapping.dir/\1.bed12")
 def trna_scan_mito(infile, outfile):
@@ -465,7 +492,7 @@ def create_pre_trna(infiles, outfile):
     bedfile_name = bedfile.replace(".bed12","")
 
     statement = """
-               python %(cribbslab)s/python/modBed12.py -I %(bedfile)s -S %(bedfile_name)s_pre-tRNAs.bed12 &&
+               python %(PY_SRC_PATH)s/python/modBed12.py -I %(bedfile)s -S %(bedfile_name)s_pre-tRNAs.bed12 &&
                 bedtools getfasta -name -split -s -fi %(genome)s -bed %(bedfile_name)s_pre-tRNAs.bed12 -fo %(outfile)s """
 
     P.run(statement)
@@ -522,15 +549,17 @@ def create_mature_trna(infiles,outfile):
 
     P.run(statement)
 
+
 @transform(create_mature_trna,
            regex("tRNA-mapping.dir/(\S+).fa"),
            r"tRNA-mapping.dir/\1_mature.fa")
 def add_cca_tail(infile, outfile):
     """add CCA tail to the RNA chromosomes and remove pseudogenes"""
 
-    statement = """python %(cribbslab)s/python/addCCA.py -I %(infile)s -S %(outfile)s"""
+    statement = """python %(PY_SRC_PATH)s/python/addCCA.py -I %(infile)s -S %(outfile)s"""
 
     P.run(statement)
+
 
 @transform(add_cca_tail,
            regex("tRNA-mapping.dir/(\S+)_mature.fa"),
@@ -540,9 +569,10 @@ def mature_trna_cluster(infile, outfile):
 
     cluster_info = outfile.replace("_cluster.fa","_clusterInfo.fa")
 
-    statement = """python %(cribbslab)s/python/trna_cluster.py -I %(infile)s -S %(outfile)s --info-file-out=%(cluster_info)s"""
+    statement = """python %(PY_SRC_PATH)s/python/trna_cluster.py -I %(infile)s -S %(outfile)s --info-file-out=%(cluster_info)s"""
 
     P.run(statement)
+
 
 @transform(mature_trna_cluster,
            regex("tRNA-mapping.dir/(\S+).fa"),
@@ -596,7 +626,7 @@ def remove_reads(infiles, outfile):
     temp_file1 = P.get_temp_filename(".")
     
     statement = """samtools view -h %(infile)s> %(temp_file)s && 
-                   perl %(cribbslab)s/perl/removeGenomeMapper.pl %(pre_trna_genome)s %(temp_file)s %(temp_file1)s &&
+                   perl %(PY_SRC_PATH)s/perl/removeGenomeMapper.pl %(pre_trna_genome)s %(temp_file)s %(temp_file1)s &&
                    samtools view -b %(temp_file1)s > %(outfile)s"""
 
     job_memory = "50G"
@@ -610,7 +640,7 @@ def remove_reads(infiles, outfile):
 def create_mature_bed(infile, outfile):
     """remove pre-tRNA regions and form a bed file of the mature tRNAs"""
 
-    statement = """python %(cribbslab)s/python/trna_keep_mature.py -I %(infile)s -S %(outfile)s """
+    statement = """python %(PY_SRC_PATH)s/python/trna_keep_mature.py -I %(infile)s -S %(outfile)s """
 
     P.run(statement)
 
@@ -630,10 +660,10 @@ def keep_mature_trna(infiles, outfile):
 
     P.run(statement)
 
-
 #################################################
 # Post processing of mapping data
 #################################################
+
 @follows(mkdir("post_mapping_bams.dir"))
 @transform(keep_mature_trna,
            regex("tRNA-mapping.dir/(\S+)_filtered.fastq.gz"),
@@ -653,6 +683,32 @@ def post_mapping_cluster(infiles, outfile):
                    samtools index %(outfile)s"""
 
     job_memory = "40G"
+    P.run(statement)
+
+
+@transform(map_with_bowtie,
+           regex("mapping.dir/(\S+).bam"),
+           add_inputs(trna_scan_mito),
+           r"mapping.dir/\1.transcriptprofile.gz")
+def profile_trna(infiles, outfile):
+    """This function takes a mapped bam file and then computes the profile across
+    the gene of the tRNA"""
+
+    bamfile, bedfile = infiles
+
+    statement = """cat %(bedfile)s |
+                   cgat bed2gff --as-gtf | gzip > tRNA-mapping.dir/tRNA-scan.gtf.gz &&
+                   cgat bam2geneprofile 
+                   --output-filename-pattern="%(outfile)s.%%s"
+                   --force-output
+                   --reporter=gene
+                   --method=geneprofile
+                   --bam-file=%(bamfile)s
+                   --gtf-file=tRNA-mapping.dir/tRNA-scan.gtf.gz
+                   | gzip
+                   > %(outfile)s
+                   """
+
     P.run(statement)
 
 
@@ -743,6 +799,29 @@ def merge_idx_stats(infiles, outfile):
 
     final_df.to_csv(outfile, sep="\t", compression="gzip")
 
+#################################################
+# Identify tRNA read end sites
+#################################################
+
+@follows(mkdir("tRNA-end-site.dir"))
+@transform(post_mapping_cluster,
+           regex("post_mapping_bams.dir/(\S+)_trna.bam"),
+           add_inputs(mature_trna_cluster),
+           r"tRNA-end-site.dir/\1.dir/")
+def trna_calculate_end(infiles, outdir):
+    """
+    Calculates the end position for each read for each tRNA cluster then
+    plots a heatmap
+    """
+    os.mkdir(outdir)
+
+    bamfile, fastafile = infiles
+
+    statement = """python %(PY_SRC_PATH)s/python/trna_end_site.py -I %(bamfile)s -d %(outdir)s -f %(fastafile)s"""
+
+    P.run(statement)
+
+
 ####################################
 # Collect information regarding the per base % and create a
 # table of sample info for plotting
@@ -782,7 +861,7 @@ def feature_count_plot(infiles, outfile):
     '''''' Create plot of proportion of gene type mapped for each sample''''''
 
     infiles = ":".join(infiles)
-    statement = """Rscript %(cribbslab)s/R/feature_count_plots.r
+    statement = """Rscript %(PY_SRC_PATH)s/R/feature_count_plots.r
                 --input=%(infiles)s 
                 --output=%(outfile)s
                 """
@@ -790,28 +869,38 @@ def feature_count_plot(infiles, outfile):
 
 '''
 
-@follows(strand_specificity, count_reads, count_features, build_bam_stats,
-         full_genome_idxstats, build_samtools_stats, genome_coverage,
-         bowtie_index_artificial, index_trna_cluster, remove_reads,
-         keep_mature_trna, merge_idx_stats, create_coverage, filter_vcf)
-def full():
-    pass
+@transform(create_coverage,
+           regex("post_mapping_bams.dir/(\S+)_pileup.tsv"),
+           r"\1_coverage.png")
+def coverage_plot(infile, outfile):
+    ''' '''
 
-@originate("multiqc_data.dir")
-def run_multiqc(outfile):
-    ''' Run multiqc and overwrite any old reports '''
-
-    statement = '''export LC_ALL=en_GB.UTF-8 && export LANG=en_GB.UTF-8 && multiqc -f . &&
-                   mv multiqc_report.html multiqc_data.dir'''
+    statement = """ Rscript %(PY_SRC_PATH)s/R/coverage_plot_test_script.r --input=%(infile)s --output=%(outfile)s """
 
     P.run(statement)
 
-@follows(run_multiqc)
+
+@follows(strand_specificity, count_reads, count_features, build_bam_stats,
+         full_genome_idxstats, build_samtools_stats, genome_coverage,
+         bowtie_index_artificial, index_trna_cluster, remove_reads,
+         keep_mature_trna, merge_idx_stats, create_coverage, filter_vcf, merge_features, profile_trna, trna_calculate_end)
+def full():
+    pass
+
+@originate("multiqc_data")
+def run_multiqc(outfile):
+    ''' Run multiqc and overwrite any old reports '''
+
+    statement = '''multiqc -f . '''
+
+    P.run(statement)
+
+
 @originate("QC_report.html")
 def run_rmarkdown(outfile):
 
     cwd = os.getcwd()
-    statement = '''cp %(cribbslab)s/R/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" '''
+    statement = '''cp %(RMD_SRC_PATH)s/R/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" '''
 
     P.run(statement)
 

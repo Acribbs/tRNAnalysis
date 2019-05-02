@@ -1,20 +1,20 @@
 '''
-tRNA-mapper.py - tRNA-mapper
+tRNAnalysis.py - tRNAnalysis
 ============================
 
 :Tags: Genomics
 
 To use a specific workflow, type::
 
-    tRNA-mapper <workflow> [workflow options] [workflow arguments]
+    trnanalysis <workflow> [workflow options] [workflow arguments]
 
 For this message and a list of available keywords type::
 
-    tRNA-mapper --help
+    trnanalysis --help
 
 To get help for a specify workflow, type::
 
-     tRNA-mapper <workflow> --help
+     trnanalysis <workflow> --help
 '''
 
 import os
@@ -70,18 +70,14 @@ def main(argv=None):
         for path in paths:
             pipelines.extend(glob.glob(os.path.join(path, "pipeline_*.py")))
         print((globals()["__doc__"]))
-        print("The list of all available pipelines is:\n")
-        print("{}\n".format(
-            printListInColumns(
-                sorted([os.path.basename(x)[len("pipeline_"):-len(".py")] for x in pipelines]),
-                3)))
+
         return
 
     command = argv[1]
     command = re.sub("-", "_", command)
     pipeline = "pipeline_{}".format(command)
 
-    # remove 'cgatshowcase' from sys.argv
+    # remove 'trnanalysis' from sys.argv
     del sys.argv[0]
 
     (file, pathname, description) = imp.find_module(pipeline, paths)

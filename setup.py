@@ -34,8 +34,8 @@ IS_OSX = sys.platform == 'darwin'
 
 ########################################################################
 ########################################################################
-# collect CGAT version
-sys.path.insert(0, "trnamapper")
+# collect tRNAnalysis version
+sys.path.insert(0, "trnanalysis")
 import version
 
 version = version.__version__
@@ -47,10 +47,10 @@ version = version.__version__
 major, minor1, minor2, s, tmp = sys.version_info
 
 if major < 3:
-    raise SystemExit("""cgat-showcase requires Python 3 or later.""")
+    raise SystemExit("""tRNAnalysis requires Python 3 or later.""")
 
 
-cgat_package_dirs = {'trnamapper': 'trnamapper'}
+cgat_package_dirs = {'trnanalysis': 'trnanalysis'}
 
 ##########################################################
 ##########################################################
@@ -69,9 +69,9 @@ Operating System :: MacOS
 
 setup(
     # package information
-    name='tRNA-mapper',
+    name='tRNAnalysis',
     version=version,
-    description='tRNA-mapper : this software will perform alignment of reads to tRNA ',
+    description='tRNAnalysis : this software will perform alignment of reads to tRNA ',
     author='Adam Cribbs',
     author_email='adam.cribbs AT imm.ox.ac.uk',
     license="MIT",
@@ -82,11 +82,11 @@ setup(
     url="https://github.com/",
     # package contents
     packages=find_packages(),
-    package_data={'tRNA-mapper':['tRNA-mapper/R/*.R', 'tRNA-mapper/R/*.Rmd', '/tRNA-mapper/pipeline_trna/*']},
+    package_data={'tRNAnalysis':['tRNAnalysis/R/*.R', 'tRNAnalysis/R/*.Rmd', '/tRNAnalysis/pipeline_trna/*']},
     package_dir=cgat_package_dirs,
     include_package_data=True,
     entry_points={
-        'console_scripts': ['trnamapper = trnamapper.entry:main']
+        'console_scripts': ['trnanalysis = trnanalysis.entry:main']
     },
     # other options
     zip_safe=False,

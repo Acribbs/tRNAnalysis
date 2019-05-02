@@ -1,0 +1,28 @@
+---
+title: "Introduction"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "`r Sys.info()[[7]]`"
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center", warning=FALSE, message=FALSE)
+```
+
+Report generated based on data located in `r getwd()` \n
+
+Report generated at: `r format(Sys.time(), "%X %x ")` \n 
+
+# General Information
+
+This workflow was generated as a response to not being able to effectively
+analyse tRNA data from next generation sequencing experiments. Typical
+workflows are not very flexible and do not scale well for multiple
+samples. Moreover, most do not impliment best-practice mapping strategies or generate detailed analysis reports to aid biological interpretation.
+
+This software intends to address these issues by implimenting the latest
+best-practice mapping startegy proposed by [Hoffmann et al 2018](https://www.ncbi.nlm.nih.gov/pubmed/29228294), the nomenclature and visualisation scheme proposed by [Selitsky et al](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-015-0800-0), [Loher et al](https://www.nature.com/articles/srep41184) and [Zheng at al](https://www.ncbi.nlm.nih.gov/pubmed/27179031).
+
+The pipeline can be used for evaluating the levels of small RNAs in a sample
+but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment
+analysis.
