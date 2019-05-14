@@ -905,7 +905,10 @@ def full():
 def run_multiqc(outfile):
     ''' Run multiqc and overwrite any old reports '''
 
-    statement = '''multiqc -f . '''
+    statement = '''
+        export LC_ALL=en_GB.UTF-8 &&
+        export LANG=en_GB.UTF-8 &&
+        multiqc -f . '''
 
     P.run(statement)
 
@@ -917,7 +920,8 @@ def run_rmarkdown(outfile):
                                           "Rmarkdown"))
 
     cwd = os.getcwd()
-    statement = '''cp %(RMD_SRC_PATH)s/R/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" ''' % locals()
+    # Needs to be re-written so that the whole report is now rendered
+    statement = '''cp %(RMD_SRC_PATH)s/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" ''' % locals()
 
     P.run(statement)
 
