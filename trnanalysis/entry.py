@@ -6,7 +6,7 @@ tRNAnalysis.py - tRNAnalysis
 
 To use a specific workflow, type::
 
-    trnanalysis <workflow> [workflow options] [workflow arguments]
+    trnanalysis trna [workflow options] [workflow arguments]
 
 For this message and a list of available keywords type::
 
@@ -14,7 +14,7 @@ For this message and a list of available keywords type::
 
 To get help for a specify workflow, type::
 
-     trnanalysis <workflow> --help
+     trnanalysis trna --help
 '''
 
 import os
