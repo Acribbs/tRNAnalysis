@@ -22,7 +22,7 @@ import sys
 import re
 import glob
 import imp
-import trnamapper
+import trnanalysis
 
 
 def printListInColumns(l, ncolumns):
@@ -60,7 +60,7 @@ def main(argv=None):
     argv = sys.argv
 
     # paths to look for pipelines:
-    path = os.path.abspath(os.path.dirname(trnamapper.__file__))
+    path = os.path.abspath(os.path.dirname(trnanalysis.__file__))
     relpath = os.path.abspath("../src")
 
     paths = [path, relpath]
