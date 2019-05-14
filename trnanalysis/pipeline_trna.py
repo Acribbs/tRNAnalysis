@@ -6,7 +6,7 @@ Overview
 ========
 
 This pipeline was developed to accurately map small RNA sequencing data and then perform
-accurate mapping of tRNA reads and qualitatively analyse the resulting data. trna-frag
+accurate mapping of tRNA reads and qualitatively analyse the resulting data. trnanalysis
 has an emphasis on profiling nuclear and mitochondrial tRNA fragments. 
 
 
@@ -35,7 +35,7 @@ import sqlite3
 import pandas as pd
 import cgatcore.pipeline as P
 import cgatcore.experiment as E
-import ModuleTrna
+import trnanalysis.ModuleTrna as ModuleTrna
 import cgat.IndexedFasta as IndexedFasta
 
 
@@ -45,10 +45,6 @@ PARAMS = P.get_parameters(
      "../pipeline.yml",
      "pipeline.yml"])
 
-PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           "python"))
-RMD_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           "Rmarkdown"))
 
 ###########################################################
 # Download the gff of rna types from ucsc
@@ -491,8 +487,11 @@ def create_pre_trna(infiles, outfile):
 
     bedfile_name = bedfile.replace(".bed12","")
 
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
+
     statement = """
-               python %(PY_SRC_PATH)s/python/modBed12.py -I %(bedfile)s -S %(bedfile_name)s_pre-tRNAs.bed12 &&
+               python %(PY_SRC_PATH)s/modBed12.py -I %(bedfile)s -S %(bedfile_name)s_pre-tRNAs.bed12 &&
                 bedtools getfasta -name -split -s -fi %(genome)s -bed %(bedfile_name)s_pre-tRNAs.bed12 -fo %(outfile)s """
 
     P.run(statement)
@@ -556,7 +555,10 @@ def create_mature_trna(infiles,outfile):
 def add_cca_tail(infile, outfile):
     """add CCA tail to the RNA chromosomes and remove pseudogenes"""
 
-    statement = """python %(PY_SRC_PATH)s/python/addCCA.py -I %(infile)s -S %(outfile)s"""
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
+
+    statement = """python %(PY_SRC_PATH)s/addCCA.py -I %(infile)s -S %(outfile)s""" % locals()
 
     P.run(statement)
 
@@ -569,7 +571,10 @@ def mature_trna_cluster(infile, outfile):
 
     cluster_info = outfile.replace("_cluster.fa","_clusterInfo.fa")
 
-    statement = """python %(PY_SRC_PATH)s/python/trna_cluster.py -I %(infile)s -S %(outfile)s --info-file-out=%(cluster_info)s"""
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
+
+    statement = """python %(PY_SRC_PATH)s/trna_cluster.py -I %(infile)s -S %(outfile)s --info-file-out=%(cluster_info)s""" % locals()
 
     P.run(statement)
 
@@ -625,9 +630,11 @@ def remove_reads(infiles, outfile):
     temp_file = P.get_temp_filename(".")
     temp_file1 = P.get_temp_filename(".")
     
+    PY_SRC_PATH = os.path.abspath(os.path.dirname(__file__))
+
     statement = """samtools view -h %(infile)s> %(temp_file)s && 
                    perl %(PY_SRC_PATH)s/perl/removeGenomeMapper.pl %(pre_trna_genome)s %(temp_file)s %(temp_file1)s &&
-                   samtools view -b %(temp_file1)s > %(outfile)s"""
+                   samtools view -b %(temp_file1)s > %(outfile)s""" % locals()
 
     job_memory = "50G"
     P.run(statement)
@@ -640,7 +647,10 @@ def remove_reads(infiles, outfile):
 def create_mature_bed(infile, outfile):
     """remove pre-tRNA regions and form a bed file of the mature tRNAs"""
 
-    statement = """python %(PY_SRC_PATH)s/python/trna_keep_mature.py -I %(infile)s -S %(outfile)s """
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                          "python"))
+
+    statement = """python %(PY_SRC_PATH)s/trna_keep_mature.py -I %(infile)s -S %(outfile)s """
 
     P.run(statement)
 
@@ -817,7 +827,10 @@ def trna_calculate_end(infiles, outdir):
 
     bamfile, fastafile = infiles
 
-    statement = """python %(PY_SRC_PATH)s/python/trna_end_site.py -I %(bamfile)s -d %(outdir)s -f %(fastafile)s"""
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
+
+    statement = """python %(PY_SRC_PATH)s/trna_end_site.py -I %(bamfile)s -d %(outdir)s -f %(fastafile)s""" % locals()
 
     P.run(statement)
 
@@ -874,6 +887,7 @@ def feature_count_plot(infiles, outfile):
            r"\1_coverage.png")
 def coverage_plot(infile, outfile):
     ''' '''
+    PY_SRC_PATH = os.path.abspath(os.path.dirname(__file__))
 
     statement = """ Rscript %(PY_SRC_PATH)s/R/coverage_plot_test_script.r --input=%(infile)s --output=%(outfile)s """
 
@@ -899,8 +913,11 @@ def run_multiqc(outfile):
 @originate("QC_report.html")
 def run_rmarkdown(outfile):
 
+    RMD_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                          "Rmarkdown"))
+
     cwd = os.getcwd()
-    statement = '''cp %(RMD_SRC_PATH)s/R/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" '''
+    statement = '''cp %(RMD_SRC_PATH)s/R/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" ''' % locals()
 
     P.run(statement)
 
