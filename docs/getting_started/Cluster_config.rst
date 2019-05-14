@@ -5,6 +5,10 @@
 Cluster configuration
 =====================
 
+Our pipeline is developed using `CGAT-core <https://github.com/cgat-developers/cgat-core>`_ as the workflow engine. For more information
+on how tRNAnalysis is written and executed. In order for our workflows to be executed over a cluster you will need to 
+configure the cluster options by following the example below:
+
 Currently SGE, SLURM, Torque and PBSPro workload managers are supported. The default cluster options for
 cgatcore are set for SunGrid Engine (SGE). Therefore, if you would like to run an alternative workload manager
 then you will need to configure your settings for your cluster. In order to do this you will need to
