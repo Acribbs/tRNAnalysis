@@ -17,7 +17,6 @@ knitr::opts_chunk$set(echo = FALSE, fig.align="center", warning=FALSE, message=F
 ```{r libraries, include=FALSE}
 library("ggplot2")
 library("tidyverse")
-library("optparse")
 library("ggpubr")
 library("knitr")
 library("fastqcr")

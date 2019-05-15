@@ -18,10 +18,9 @@ knitr::opts_chunk$set(echo = FALSE, fig.align="center", warning=FALSE, message=F
 ```{r libraries, include=FALSE}
 library("ggplot2")
 library("tidyverse")
-library("optparse")
 library("ggpubr")
 library("knitr")
-library("fastqcr")
+library(reshape2)
 library(stringr)
 library(DT)
 library(RColorBrewer)
@@ -147,7 +146,6 @@ fc_tibble_all_samples_nonzero <- fc_tibble_all_samples_nonzero %>%
   rownames_to_column("RNA")
 
 plot_me <- melt(fc_tibble_all_samples_nonzero, by="Row.names")
-n <- num_rows
 qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
 col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
 
