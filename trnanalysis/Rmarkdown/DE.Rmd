@@ -12,6 +12,8 @@ library(pheatmap)
 library(tidyverse)
 library(DT)
 library(yaml)
+library(ggplot2) 
+library(ggrepel) 
 ```
 
 ```{r yaml, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
@@ -34,15 +36,26 @@ all(rownames(meta_data) %in% colnames(df_mRNA))
 
 ```{r , message=FALSE, include=FALSE}
 ## Set up the DESeq2 object
-res <- run_deseq2(as.data.frame(df_mRNA), meta_data, control=params$diff_eprs$control, test=params$diff_eprs$test, value=params$diff_eprs$value)
+# Decide if LRT or Wald test is to be ran
+if (params$diff_eprs$model == "Wald") {
+  res <- run_deseq2(as.data.frame(df_mRNA), meta_data, control=params$Wald$control, test=params$Wald$test, value=params$Wald$value, design=params$diff_eprs$design)
+} else{
+  res <- run_deseq2_LRT(as.data.frame(df_mRNA), meta_data, design=params$diff_eprs$design,
+                        full=params$LRT$full, reduced=params$LRT$reduced)
+}
+
 
 
 ```
+
+# Results
 
 ```{r , echo=FALSE}
 summary(res, alpha=0.01)
 
 res<- as.data.frame(res)
+
+
 write.csv(res, file="res.csv")
 ```
 
@@ -51,11 +64,6 @@ DESeq2::plotMA(res)
 ```
 
 ```{r}
-
-library("ggplot2") #Best plots
-library("ggrepel") #Avoid overlapping labels
-
-
 test <- as.data.frame(res)
 test <- test %>% 
   rownames_to_column("SYMBOL")
@@ -83,264 +91,3 @@ dev.off()
 ```
 
 
-```{r}
-df_mRNA <- read.table("merged_idxstats.txt", sep = "\t", header = TRUE, row.names = 1)
-
-data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):(.*)-"))
-data <- cbind(data, df_mRNA)
-
-data$V1 <- NULL
-data$V2 <- NULL
-data_1 <- data %>%  dplyr::group_by(V3)
-
-data_1 %>%  summarise_all(sum) -> data_1
-
-data_1 <- na.omit(data_1)
-
-rownames(data_1) <- data_1$V3
-data_1$V3 <- NULL
-
-data_1 %>%  rownames_to_column("id") %>% filter_all(all_vars(. > 0)) %>% 
-  column_to_rownames("id")-> final
-
-features <- melt(as.matrix(final), by="Row.names")
-ggplot(features, aes(x = Var2, y = value, fill = Var1)) + 
-       geom_bar(stat = 'identity') 
-
-```
-
-
-```{r}
-df_mRNA <- read.table("merged_idxstats.txt", sep = "\t", header = TRUE, row.names = 1)
-
-
-data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):([A-Z][a-z][a-z]).*-"))
-data <- cbind(data, df_mRNA)
-
-data$V1 <- NULL
-data$V2 <- NULL
-data_1 <- data %>%  dplyr::group_by(V3)
-
-data_1 %>%  summarise_all(sum) -> data_1
-
-data_1 <- na.omit(data_1)
-
-rownames(data_1) <- data_1$V3
-data_1$V3 <- NULL
-
-num_samples <- length(colnames(data_1))
-feature_count_tibble_all_samples = data.frame(matrix(ncol = 0, nrow = 22)) 
-rownames(feature_count_tibble_all_samples) <- rownames(data_1)
-
-for(i in 1:num_samples){
-  sample <- data_1[i]
-  total_reads = sum(sample)
-  for(n in dim(features)[1]){
-  sample_name <- colnames(sample)
-  sample$Percentages <- 100*( sample[sample_name] / total_reads)
-  feature_count_tibble_all_samples = bind_cols(feature_count_tibble_all_samples,sample$Percentages)
-  }
-  
-  
-}
-
-rownames(feature_count_tibble_all_samples) <- rownames(data_1)
-
-fc_tibble_all_samples_nonzero <- feature_count_tibble_all_samples[rowSums(feature_count_tibble_all_samples > 0)==dim(feature_count_tibble_all_samples)[2],]
-
-write.csv(fc_tibble_all_samples_nonzero, "percentages-tRNA-amino-acid.csv")
-
-fc_tibble_all_samples_nonzero <- fc_tibble_all_samples_nonzero %>% 
-  rownames_to_column("RNA") 
-plot_me <- melt(fc_tibble_all_samples_nonzero, by="Row.names")
-
-postscript("tRNA-percentage.eps")
-ggbarplot(plot_me, x = "variable", y = "value",
-   fill = "RNA", palette = "aaas") + scale_y_continuous(limits=c(0, 100))
-dev.off()
-```
-
-
-# Run differential expression with LRT test
-
-
-```{r}
-
-df_mRNA <- read.table("merged_idxstats.txt", sep = "\t", header = TRUE, row.names = 1)
-
-meta_data <- read.table("meta_data.csv", sep=",", header = TRUE)
-
-rownames(meta_data) <- meta_data$Sample
-df_mRNA = df_mRNA[,rownames(meta_data)]
-
-all(rownames(meta_data) %in% colnames(df_mRNA))
-```
-
-```{r}
-
-dds<- DESeqDataSetFromMatrix(countData=df_mRNA,
-                               colData=meta_data,
-                               design= ~Condition)
-ddsLRT <- DESeq(dds, test="LRT", reduced= ~ 1)
-resLRT <- as.data.frame(results(ddsLRT))
-
-sig <- resLRT %>%  rownames_to_column("tRNAid") %>%  filter(padj < 0.01)
-
-
-# use the log transform on the data set
-rld <- rlog(dds, blind=F)
-matrix <- assay(rld)
-matrix <- matrix - rowMeans(matrix)
-
-matrix <- matrix[sig$tRNAid,]
-annotation_data <- as.data.frame(colData(rld)["Condition"])
-
-setEPS()
-postscript("heatmap_allvsall.eps")
-pheatmap(matrix, annotation_col=annotation_data, show_rownames = T, show_colnames = F, fontsize_row = 3)
-dev.off()
-
-
-
-# Plot PLAC vs 10K
-
-res_150Kvsplac <- as.data.frame(results(ddsLRT, contrast = c("Condition", "x150k", "plac")))
-
-
-library("ggplot2") #Best plots
-library("ggrepel") #Avoid overlapping labels
-
-res <- res_150Kvsplac
-test <- res_150Kvsplac %>% 
-  rownames_to_column("SYMBOL")
-
-mutateddf <- dplyr::mutate(test, sig=ifelse(res$padj<0.01, "padj<0.01", "Not Sig")) #Will have different colors depending on significance
-input <- cbind(gene=rownames(mutateddf), mutateddf )
-input <- input %>% 
-  arrange(input$padj)
-
-symbol_data <- 
-  input %>% arrange(padj) %>% dplyr::filter(sig == "padj<0.01") %>% 
-  dplyr::filter(log2FoldChange >1 | log2FoldChange < -1) %>% 
-  head(10)
-
-#convert the rownames to a column
-volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2Foldchange versus pvalue
-    geom_point(aes(col=sig)) + #add points colored by significance
-geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") +
-      ggtitle("Vesicles") #e.g. 'Volcanoplot DESeq2'
-
-setEPS()
-postscript("volcano_150kvsplac.eps")
-volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
-dev.off()
-
-# Plot PLAC vs 10K
-
-res_10Kvsplac <- as.data.frame(results(ddsLRT, contrast = c("Condition", "x10k", "plac")))
-
-
-library("ggplot2") #Best plots
-library("ggrepel") #Avoid overlapping labels
-
-res <- res_10Kvsplac
-test <- res_10Kvsplac %>% 
-  rownames_to_column("SYMBOL")
-
-mutateddf <- dplyr::mutate(test, sig=ifelse(res$padj<0.01, "padj<0.01", "Not Sig")) #Will have different colors depending on significance
-input <- cbind(gene=rownames(mutateddf), mutateddf )
-input <- input %>% 
-  arrange(input$padj)
-
-symbol_data <- 
-  input %>% arrange(padj) %>% dplyr::filter(sig == "padj<0.01") %>% 
-  dplyr::filter(log2FoldChange >1 | log2FoldChange < -1) %>% 
-  head(10)
-
-#convert the rownames to a column
-volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2Foldchange versus pvalue
-    geom_point(aes(col=sig)) + #add points colored by significance
-geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") +
-      ggtitle("Vesicles") #e.g. 'Volcanoplot DESeq2'
-
-setEPS()
-postscript("volcano_10kvsplac.eps")
-volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
-dev.off()
-
-
-# 10k vs 150k
-
-res_10Kvs150k <- as.data.frame(results(ddsLRT, contrast = c("Condition", "x150k", "x10k")))
-
-library("ggplot2") #Best plots
-library("ggrepel") #Avoid overlapping labels
-
-res <- res_10Kvs150k
-test <- res_10Kvs150k %>% 
-  rownames_to_column("SYMBOL")
-
-mutateddf <- dplyr::mutate(test, sig=ifelse(res$padj<0.01 & res$log2FoldChange >1 | res$log2FoldChange < -1, "padj<0.01", "Not Sig")) #Will have different colors depending on significance
-input <- cbind(gene=rownames(mutateddf), mutateddf )
-input <- input %>% 
-  arrange(input$padj)
-
-symbol_data <- 
-  input %>% arrange(padj) %>% dplyr::filter(sig == "padj<0.01") %>% 
-  dplyr::filter(log2FoldChange >1 | log2FoldChange < -1) %>% 
-  head(10)
-
-
-#convert the rownames to a column
-volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2Foldchange versus pvalue
-    geom_point(aes(col=sig)) + #add points colored by significance
-geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") +
-      ggtitle("Vesicles") #e.g. 'Volcanoplot DESeq2'
-
-setEPS()
-postscript("volcano_10kvs150k.eps")
-volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
-dev.off()
-```
-
-# venn diagrams
-
-```{r}
-library(VennDiagram)
-
-res_10Kvsplac %>% rownames_to_column("SYMBOL") %>%  dplyr::filter(padj < 0.01) -> de_genes_HCC
-
-res_150Kvsplac %>% rownames_to_column("SYMBOL") %>%  dplyr::filter(padj < 0.01) -> de_genes_MCF7
-
-de_genes_HCC_up <- de_genes_HCC$SYMBOL
-de_genes_MCF7_up <- de_genes_MCF7$SYMBOL
-
-
-venn.diagram(
-  x = list(de_genes_HCC_up, de_genes_MCF7_up),
-  category.names = c("10K" , "150K"),
-  filename = 'overlap.tiff',
-  output = TRUE ,
-  imagetype="tiff" ,
-  height = 480 , 
-  width = 480 , 
-  resolution = 600,
-  lwd = 2,
-  lty = 'blank',
-  fill = c("#FF7A5A","#462066"),
-  cex = 0.2,
-  fontface = "bold",
-  fontfamily = "sans",
-  cat.cex = 0.2,
-  cat.fontface = "bold",
-  cat.default.pos = "outer",
-  cat.pos = c(-27, 27),
-  cat.dist = c(0.055, 0.05),
-  cat.fontfamily = "sans"
-)
-
-
-intersect_up <- intersect(de_genes_HCC_up, de_genes_MCF7_up)
-write.csv(intersect_up, file="overlap_CA9_upreg.csv")
-
-```

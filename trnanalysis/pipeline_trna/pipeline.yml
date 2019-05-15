@@ -111,11 +111,23 @@ bowtie:
 ###########################################################
 
 diff_eprs:
+    # Is a Wald or LRT test required?
+    model: Wald
     # This is the design formula to use for DESeq2
     design: ~Condition
+
+# If the wald test is set then specify the following values:
+Wald:
     # Select the column with the contrast for your analysis
     value: Condition
     # Select the control
     control: Condition1
     # Select the test value
     test: Condition2 
+
+# If the LRT test is set then specify the full and reduced model
+LRT:   
+    
+    full: ~Condition+sample_type
+    
+    reduced: ~Condition
