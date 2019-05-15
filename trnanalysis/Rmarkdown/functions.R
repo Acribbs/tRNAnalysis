@@ -1,59 +1,3 @@
-Reactome_analysis <- function(background, data, ontology, name=""){
-  
-  name = paste(name)
-  eTerm <- xEnricherGenes(data=data, background=background, ontology=ontology)
-  eTerm_u373.tmz_MsigdbC2REACTOME <- xEnrichConciser(eTerm)
-  xEnrichViewer(eTerm_u373.tmz_MsigdbC2REACTOME, 10)
-  bp_IFN24_MsigdbC2REACTOME <- xEnrichBarplot(eTerm_u373.tmz_MsigdbC2REACTOME, top_num=10, displayBy="fdr")
-  
-  bp_IFN24_MsigdbC2REACTOME <- bp_IFN24_MsigdbC2REACTOME + ggtitle(paste0(name))
-  return(bp_IFN24_MsigdbC2REACTOME)
-}
-
-ensembl_to_symbol <- function(dataframe, ensembl_column){
-  
-  dataframe_tmp <- dataframe %>% 
-    select(ensembl_column)
-  data <- unlist(dataframe_tmp)
-  data <- as.vector(data)
-  annots <-  AnnotationDbi::select(org.Hs.eg.db, keys=data,
-                                   columns=c("SYMBOL","GENENAME"), keytype = "ENSEMBL")
-
-  result <- merge(dataframe, annots, by.x=ensembl_column, by.y="ENSEMBL")
-  return(result)
-  }
-
-
-filter_genes <- function(result, name){
-  
-  test <- as.data.frame(result)
-  
-  data <- as.vector(rownames(test))
-  annots <-  AnnotationDbi::select(org.Hs.eg.db, keys=data,
-                   columns=c("SYMBOL","GENENAME"), keytype = "ENSEMBL")
-  
-  result <- merge(test, annots, by.x="row.names", by.y="ENSEMBL")
-  res <- result %>% 
-    dplyr::select(log2FoldChange, SYMBOL, GENENAME, baseMean, padj, Row.names) %>% 
-    na.omit()
-  
-  sig <- res %>% 
-    filter(log2FoldChange > 1 | log2FoldChange < -1) %>% 
-    filter(padj < 0.05)
-  
-  sig_name = paste("results/", name,"_sig.csv", sep="")
-  sig_name_tsv = paste("results/", name,"_sig.tsv", sep="")
-  res_name = paste("results/",name,"_res.csv", sep="")
-  res_name_tsv = paste("results/", name,"_res.tsv", sep="")
-  write_csv(sig, sig_name)
-  write_csv(res, res_name)
-  write_tsv(sig, sig_name_tsv)
-  write_tsv(res, res_name_tsv)
-  return(list("sig"= sig, "res"= res))
-}
-
-
-
 run_deseq2_full <- function(df_mRNA, meta_data){
   
   
@@ -70,14 +14,15 @@ run_deseq2_full <- function(df_mRNA, meta_data){
 }
 
 
-run_deseq2 <- function(df_mRNA, meta_data, control="untreated", test="treated", value){
+run_deseq2 <- function(df_mRNA, meta_data, control="untreated", test="treated", value,
+                       design){
 
   df_mRNA = df_mRNA[,rownames(meta_data)]
   
   
   dds<- DESeqDataSetFromMatrix(countData=df_mRNA,
                                colData=meta_data,
-                               design= ~Condition)
+                               design= as.factor(design))
   
   keep <- rowSums(counts(dds)) >= 10
   dds <- dds[keep,]
@@ -85,6 +30,25 @@ run_deseq2 <- function(df_mRNA, meta_data, control="untreated", test="treated", 
   dds <- DESeq(dds)
   
   res <- results(dds, contrast = c(value, test,control))
+  
+  return(res)
+}
+
+run_deseq2_LRT <- function(df_mRNA, meta_data, design, full, reduced){
+  
+  df_mRNA = df_mRNA[,rownames(meta_data)]
+  
+  
+  dds<- DESeqDataSetFromMatrix(countData=df_mRNA,
+                               colData=meta_data,
+                               design= as.formula(design))
+  
+  keep <- rowSums(counts(dds)) >= 10
+  dds <- dds[keep,]
+  
+  dds <- DESeq(dds, test="LRT", full=~something, reduced=~reduced)
+  
+  res <- results(dds)
   
   return(res)
 }
