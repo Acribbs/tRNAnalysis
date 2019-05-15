@@ -1,0 +1,93 @@
+---
+title: "Differential expression"
+output: html_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+source('functions.R')
+library(org.Hs.eg.db)
+library(DESeq2)
+library(pheatmap)
+library(tidyverse)
+library(DT)
+library(yaml)
+library(ggplot2) 
+library(ggrepel) 
+```
+
+```{r yaml, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
+params <- read_yaml("../pipeline.yml")
+```
+
+```{r imports, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
+
+df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
+
+colnames(df_mRNA) <- gsub("_trna", "", x = colnames(df_mRNA), fixed = T)
+meta_data <- read.table("../meta_data.csv", sep=",", header = TRUE)
+
+rownames(meta_data) <- meta_data$Sample
+df_mRNA = df_mRNA[,rownames(meta_data)]
+
+all(rownames(meta_data) %in% colnames(df_mRNA))
+```
+
+
+```{r , message=FALSE, include=FALSE}
+## Set up the DESeq2 object
+# Decide if LRT or Wald test is to be ran
+if (params$diff_eprs$model == "Wald") {
+  res <- run_deseq2(as.data.frame(df_mRNA), meta_data, control=params$Wald$control, test=params$Wald$test, value=params$Wald$value, design=params$diff_eprs$design)
+} else{
+  res <- run_deseq2_LRT(as.data.frame(df_mRNA), meta_data, design=params$diff_eprs$design,
+                        full=params$LRT$full, reduced=params$LRT$reduced)
+}
+
+
+
+```
+
+# Results
+
+```{r , echo=FALSE}
+summary(res, alpha=0.01)
+
+res<- as.data.frame(res)
+
+
+write.csv(res, file="res.csv")
+```
+
+```{r }
+DESeq2::plotMA(res)
+```
+
+```{r}
+test <- as.data.frame(res)
+test <- test %>% 
+  rownames_to_column("SYMBOL")
+
+mutateddf <- dplyr::mutate(test, sig=ifelse(res$padj<0.01, "padj<0.01", "Not Sig")) #Will have different colors depending on significance
+input <- cbind(gene=rownames(mutateddf), mutateddf )
+input <- input %>% 
+  arrange(input$padj)
+
+symbol_data <- head(input, 10)
+
+#convert the rownames to a column
+volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2Foldchange versus pvalue
+    geom_point(aes(col=sig)) + #add points colored by significance
+geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") +
+      ggtitle("Vesicles") #e.g. 'Volcanoplot DESeq2'
+
+setEPS()
+postscript("volcano_150kvsplac.eps")
+volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
+dev.off()
+#ggsave("Volcanoplot.jpeg", device="jpeg") #In case you want to easily save to disk
+#dev.off()
+
+```
+
+

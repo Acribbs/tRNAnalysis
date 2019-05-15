@@ -8,7 +8,7 @@
 ################################################################
 
 # Location of the cribbslab directory
-cribbslab: '/ifs/devel/annajb/tRNA_mapping/cribbslab/'
+cribbslab: '/ifs/projects/adam/cribbslab/'
 
 # Project name
 projectname: proj001
@@ -17,7 +17,18 @@ projectname: proj001
 copyright: Cribbs Group, Botnar Research Centre (2018)
 
 ##########################################################
+# Location of the ensembl gtf
+##########################################################
+
+# Full diectory of the gtf
+gtf_location: /ifs/projects/proj051/Analysis_will_paper/tRNA/Homo_sapiens.GRCh38.92.gtf.gz
+
+trna_scan_load: 0
+
+##########################################################
 # UCSC database options
+# This section controls the parameters required for
+# repeats from the ucsc
 ##########################################################
 
 ucsc:
@@ -28,7 +39,7 @@ ucsc:
     user: genome
 
 # UCSC database name
-    database: hg19
+    database: hg38
 
 # repeats to collect as ',' separated list
     repeattypes: DNA,LINE,SINE,LTR,Transposon
@@ -40,14 +51,47 @@ ucsc:
 # for contigs (ensembl nomenclature)
 # to be removed from ensembl_filename_gtf during genome
 # sanitization
-    remove_contigs: random,chrUn,na,alt
+    remove_contigs: [random,chrUn,na,alt]
 
+
+################################################################
+# trimmomatic options
+################################################################
+trimmomatic:
+# http://www.usadellab.org/cms/?page=trimmomatic
+
+# specify with 1 or 0 if trimmomatic should be ran
+    run: 0
+
+#options
+    options: LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+
+# specify the phred score as per trimmomatic documentation
+    phred: -phred33
+
+# if adapter removal is required, specify the location of a fasta file
+# containing adapters and define the adapter parameters
+# this variable will be overriden if auto_remove != 0
+    adapter: /ifs/apps/bio/trimmomatic-0.32/adapters/TruSeq2-PE.fa
+
+# max mismatches in adapter sequence
+    mismatches: 1
+
+# accuracy thresholds. these values are (very roughly speaking) log-10
+# probabilities of getting a match at random
+# A threshold of 10 requires a perfect match of ~17bp (see above website)
+    c_thresh: 10
+
+# only used in paired end mode
+    p_thresh: 30
 
 ########################################################
 # the genome to use (UCSC convention)
 ########################################################
 
-genome: hg19
+# The name of the genome (single word with no "_" or "-" and including a number, without the .fa. e.g. hg19, genome1)
+genome: hg38
+
 # The folder that the genome is located in
 genome_dir: /ifs/mirror/genomes/index/
 
@@ -57,21 +101,33 @@ genome_dir: /ifs/mirror/genomes/index/
 ##########################################################
 
 bowtie:
-    genome : hg19
+    genome : hg38
+
     genome_dir: /ifs/mirror/genomes/bowtie/
+
     options: --local --very-sensitive-local
-
 ###########################################################
-# tRNA scan options
-# Run trna scan if 1, otherwise include location of indexed genome.
-############################################################
-index:
+# Differential expression
+###########################################################
 
-# Run tRNA scan
-    run : 0
+diff_eprs:
+    # Is a Wald or LRT test required?
+    model: Wald
+    # This is the design formula to use for DESeq2
+    design: ~Condition
 
-# Location of pre-indexed genome 
-    genome_dir : /ifs/research-groups/botnar/proj025/analyses/
-    genome : tRNAscan_h38
+# If the wald test is set then specify the following values:
+Wald:
+    # Select the column with the contrast for your analysis
+    value: Condition
+    # Select the control
+    control: Condition1
+    # Select the test value
+    test: Condition2 
 
-
+# If the LRT test is set then specify the full and reduced model
+LRT:   
+    
+    full: ~Condition+sample_type
+    
+    reduced: ~Condition

@@ -4,10 +4,12 @@ navbar:
   right:
   - text: Home
     href: index.html
+  - text: read QC
+    href: QC_alignment.html
   - text: QC-report
     icon: fa-link
     href: QC_report.html
-  - text: 
+  - text: Diff expression
     icon: fa-link
     href: DE.html
 
