@@ -917,7 +917,8 @@ def run_multiqc(outfile):
     P.run(statement)
 
 
-@originate("QC_report.html")
+@follows(mkdir("Report.dir"))
+@originate("Report.dir/Final_report/QC_report.html")
 def run_rmarkdown(outfile):
 
     RMD_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
@@ -925,7 +926,9 @@ def run_rmarkdown(outfile):
 
     cwd = os.getcwd()
     # Needs to be re-written so that the whole report is now rendered
-    statement = '''cp %(RMD_SRC_PATH)s/QC_report.Rmd . | Rscript -e "rmarkdown::render('QC_report.Rmd', clean=TRUE)" ''' % locals()
+    statement = '''cp %(RMD_SRC_PATH)s/* Report.dir/ &&
+                   cd Report.dir && 
+                   R -e "rmarkdown::render_site()" ''' % locals()
 
     P.run(statement)
 
