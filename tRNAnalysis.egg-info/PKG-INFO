@@ -1,0 +1,24 @@
+Metadata-Version: 1.1
+Name: tRNAnalysis
+Version: 0.1.9
+Summary: tRNAnalysis : this software will perform alignment of reads to tRNA 
+Home-page: https://github.com/
+Author: Adam Cribbs
+Author-email: adam.cribbs AT imm.ox.ac.uk
+License: MIT
+Description: tRNAnalysis
+        
+        Installation
+        ------------
+        
+Keywords: computational genomics
+Platform: any
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved
+Classifier: Programming Language :: Python
+Classifier: Topic :: Software Development
+Classifier: Topic :: Scientific/Engineering
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Operating System :: MacOS

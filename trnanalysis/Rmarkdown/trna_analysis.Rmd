@@ -1,0 +1,65 @@
+---
+title: "tRNA - quality"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "`r Sys.info()[[7]]`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: yeti
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center", warning=FALSE, message=FALSE)
+```
+
+```{r libraries, include=FALSE}
+library("ggplot2")
+library("tidyverse")
+library("ggpubr")
+library("knitr")
+library(reshape2)
+library(stringr)
+library(DT)
+library(RColorBrewer)
+library(htmltools)
+```
+
+# tRNA coverage plots
+
+```{r }
+files <- normalizePath(list.files(path="../mapping.dir", include.dirs= T, pattern=".detail.png",all.files=T, full.names=T, no.. = T, recursive = T)) 
+
+data <- as.data.frame(melt(as.list(files)))
+colnames(data) <- c("File", "File_number")
+rownames(data) <- data$File_number
+data$File_number <- NULL
+datatable(data)
+```
+
+## tRNA coverage plots
+
+```{r fig.show = "hold", out.width = "50%", fig.align = "default"}
+knitr::include_graphics(files)
+
+```
+
+# tRNA cleaveage plots
+
+```{r }
+files <- normalizePath(list.files(path="../tRNA-end-site.dir/", include.dirs= T, pattern="*cluster3:GlyCCC.eps",all.files=T, full.names=T, no.. = T, recursive = T)) 
+
+data <- as.data.frame(melt(as.list(files)))
+colnames(data) <- c("File", "File_number")
+rownames(data) <- data$File_number
+data$File_number <- NULL
+datatable(data)
+```
+
+## Example files showing cleavage
+
+```{r fig.show = "hold", out.width = "50%", fig.align = "default"}
+knitr::include_graphics(files)
+```

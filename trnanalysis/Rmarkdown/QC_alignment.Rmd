@@ -24,9 +24,11 @@ library(reshape2)
 library(stringr)
 library(DT)
 library(RColorBrewer)
+library(ggplot2)
+library(plotly)
 ```
 
-```{r by_codon, include=FALSE}
+```{r by_codon, echo=FALSE}
 
 df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
 
@@ -69,50 +71,18 @@ qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
 col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
 features <- melt(as.matrix(final), by="Row.names")
 
-ggplot(features, aes(x = Var2, y = value, fill = Var1)) +
+plot <- ggplot(features, aes(x = Var2, y = value, fill = Var1)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
-  theme(axis.text.x = element_text(angle=90, hjust=1))
+  theme(axis.text.x = element_text(angle=90, hjust=1))+ theme_bw()+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+ggplotly(plot)
 ```
 
-
-
-
-# Percentage of tRNA by amino acid
-
 ```{r}
-data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):([A-Z][a-z][a-z]).*-"))
-
-data <- cbind(data, df_mRNA)
-
- 
-
-data$V1 <- NULL
-
-data$V2 <- NULL
-
-data_1 <- data %>%  dplyr::group_by(V3)
-
- 
-
-data_1 %>%  summarise_all(sum) -> data_1
-
- 
-
-data_1 <- na.omit(data_1)
-
- 
-
-rownames(data_1) <- data_1$V3
-
-data_1$V3 <- NULL
-
- 
-
 num_samples <- length(colnames(data_1))
 
-feature_count_tibble_all_samples = data.frame(matrix(ncol = 0, nrow = 22))
+feature_count_tibble_all_samples = data.frame(matrix(ncol = 0, nrow=length(rownames(data_1))))
 
 rownames(feature_count_tibble_all_samples) <- rownames(data_1)
 
@@ -150,8 +120,89 @@ qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
 col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
 
 
-ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
+plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
-  theme(axis.text.x = element_text(angle=90, hjust=1)) 
+  theme(axis.text.x = element_text(angle=90, hjust=1))  + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggplotly(plot)
+```
+
+
+
+# Percentage of tRNA by amino acid
+
+```{r}
+data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):([A-Z][a-z][a-z]).*-"))
+
+data <- cbind(data, df_mRNA)
+
+ 
+
+data$V1 <- NULL
+
+data$V2 <- NULL
+
+data_1 <- data %>%  dplyr::group_by(V3)
+
+ 
+
+data_1 %>%  summarise_all(sum) -> data_1
+
+ 
+
+data_1 <- na.omit(data_1)
+
+ 
+
+rownames(data_1) <- data_1$V3
+
+data_1$V3 <- NULL
+
+ 
+
+num_samples <- length(colnames(data_1))
+
+feature_count_tibble_all_samples = data.frame(matrix(ncol = 0, nrow=length(rownames(data_1))))
+
+rownames(feature_count_tibble_all_samples) <- rownames(data_1)
+
+ 
+
+for(i in 1:num_samples){
+
+  sample <- data_1[i]
+
+  total_reads = sum(sample)
+
+  for(n in dim(features)[1]){
+
+  sample_name <- colnames(sample)
+
+  sample$Percentages <- 100*( sample[sample_name] / total_reads)
+
+  feature_count_tibble_all_samples = bind_cols(feature_count_tibble_all_samples,sample$Percentages)
+
+  }
+}
+
+rownames(feature_count_tibble_all_samples) <- rownames(data_1)
+
+fc_tibble_all_samples_nonzero <- feature_count_tibble_all_samples[rowSums(feature_count_tibble_all_samples > 0)==dim(feature_count_tibble_all_samples)[2],]
+
+#write.csv(fc_tibble_all_samples_nonzero, "percentages-tRNA-amino-acid.csv")
+
+fc_tibble_all_samples_nonzero <- fc_tibble_all_samples_nonzero %>%
+
+  rownames_to_column("RNA")
+
+plot_me <- melt(fc_tibble_all_samples_nonzero, by="Row.names")
+qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
+col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
+
+
+plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
+
+       geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggplotly(plot)
 ```

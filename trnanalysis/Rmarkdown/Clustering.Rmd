@@ -10,10 +10,11 @@ library(org.Hs.eg.db)
 library(DESeq2)
 library(pheatmap)
 library(dplyr)
+library(yaml)
 ```
 
 ```{r , echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
-
+params <- read_yaml("../pipeline.yml")
 df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
 
 colnames(df_mRNA) <- gsub("_trna", "", x = colnames(df_mRNA), fixed = T)
@@ -44,10 +45,7 @@ df <- as.data.frame(colData(dds)[,"Condition"])
 annotation <- data.frame(Var1 = meta_data$Condition)
 rownames(annotation) <- colnames(assay(vsd))
 
-setEPS()
-postscript("highlyvariable-heatmap.eps")
 pheatmap(assay(vsd)[select,], cluster_rows = FALSE, show_rownames = FALSE, cluster_cols = TRUE, annotation =annotation, show_colnames=FALSE)
-dev.off()
 ```
 
 # Heatmap of sample-to-sample distances
@@ -63,13 +61,12 @@ samplDistMatrix <- as.matrix(sampleDists)
 rownames(samplDistMatrix) <- meta_data$Condition
 colnames(samplDistMatrix) <- meta_data$Lab_sample
 colors <- colorRampPalette(rev(brewer.pal(9, "Blues")) )(255)
-setEPS()
-postscript("sampledistances-heatmap.eps")
+
 pheatmap(samplDistMatrix, 
          clustering_distance_cols = sampleDists, 
          clustering_distance_rows = sampleDists,
          color = colors)
-dev.off()
+
 ```
 
 # PCA analysis of the samples {.tabset .tabset-fade}
@@ -79,23 +76,5 @@ Related to the distance matrix is the PCA plot, which shows the samples in the 2
 ## PCA - group
 
 ```{r , echo=FALSE}
-plotPCA(vsd, intgroup=c("Lab_sample","Condition"))
-plotPCA(vsd, intgroup="Condition")
-```
-
-```{r}
-plotPCA(vsd, intgroup="Condition")
-data <- plotPCA(rld, intgroup="Condition", returnData=TRUE)
-
-library(ggplot2)
-setEPS()
-postscript("PCA.eps")
-ggplot(data, aes(PC1, PC2, color=Condition))+
-  geom_point(size=5) + theme_bw() +
-  xlab(paste0("PC1: ","70","% variance"))+
-  ylab(paste0("PC1: ","6","% variance"))+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
-  scale_colour_manual(name="",  
-                      values = c("x10k"="#2F5369", "x150k"="#F47920", "plac"="#be1931"))
-dev.off()
+plotPCA(vsd, intgroup=params$Wald$value)
 ```

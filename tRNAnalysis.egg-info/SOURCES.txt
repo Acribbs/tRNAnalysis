@@ -1,0 +1,13 @@
+README.md
+setup.py
+tRNAnalysis.egg-info/PKG-INFO
+tRNAnalysis.egg-info/SOURCES.txt
+tRNAnalysis.egg-info/dependency_links.txt
+tRNAnalysis.egg-info/entry_points.txt
+tRNAnalysis.egg-info/not-zip-safe
+tRNAnalysis.egg-info/top_level.txt
+trnanalysis/ModuleTrna.py
+trnanalysis/__init__.py
+trnanalysis/entry.py
+trnanalysis/pipeline_trna.py
+trnanalysis/version.py

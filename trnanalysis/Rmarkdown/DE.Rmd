@@ -48,22 +48,32 @@ if (params$diff_eprs$model == "Wald") {
 
 ```
 
-# Results
+# Results - summary
 
 ```{r , echo=FALSE}
 summary(res, alpha=0.01)
 
-res<- as.data.frame(res)
-
-
-write.csv(res, file="res.csv")
+res_output<- as.data.frame(res)
+write.csv(res_output, file="res.csv")
 ```
+
+# Results - full table
+
+```{r}
+datatable(res_output)
+```
+
+
+# MA plot
 
 ```{r }
 DESeq2::plotMA(res)
 ```
 
-```{r}
+
+# Volcano plot
+
+```{r volcano, echo=FALSE}
 test <- as.data.frame(res)
 test <- test %>% 
   rownames_to_column("SYMBOL")
@@ -81,12 +91,8 @@ volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2
 geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") +
       ggtitle("Vesicles") #e.g. 'Volcanoplot DESeq2'
 
-setEPS()
-postscript("volcano_150kvsplac.eps")
 volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
-dev.off()
-#ggsave("Volcanoplot.jpeg", device="jpeg") #In case you want to easily save to disk
-#dev.off()
+
 
 ```
 

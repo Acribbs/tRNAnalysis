@@ -106,6 +106,7 @@ bowtie:
     genome_dir: /ifs/mirror/genomes/bowtie/
 
     options: --local --very-sensitive-local
+
 ###########################################################
 # Differential expression
 ###########################################################
@@ -121,13 +122,14 @@ Wald:
     # Select the column with the contrast for your analysis
     value: Condition
     # Select the control
-    control: Condition1
+    control: k10
     # Select the test value
-    test: Condition2 
+    test: k150
 
 # If the LRT test is set then specify the full and reduced model
 LRT:   
     
-    full: ~Condition+sample_type
+    full: ~Condition
     
-    reduced: ~Condition
+    reduced: ~1
+

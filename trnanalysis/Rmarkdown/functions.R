@@ -22,7 +22,7 @@ run_deseq2 <- function(df_mRNA, meta_data, control="untreated", test="treated", 
   
   dds<- DESeqDataSetFromMatrix(countData=df_mRNA,
                                colData=meta_data,
-                               design= as.factor(design))
+                               design=as.formula(design))
   
   keep <- rowSums(counts(dds)) >= 10
   dds <- dds[keep,]
@@ -46,7 +46,7 @@ run_deseq2_LRT <- function(df_mRNA, meta_data, design, full, reduced){
   keep <- rowSums(counts(dds)) >= 10
   dds <- dds[keep,]
   
-  dds <- DESeq(dds, test="LRT", full=~something, reduced=~reduced)
+  dds <- DESeq(dds, test="LRT", full=as.formula(full), reduced=as.formula(reduced))
   
   res <- results(dds)
   

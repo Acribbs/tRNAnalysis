@@ -1,0 +1,28 @@
+---
+title: "tRNA - quality"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "`r Sys.info()[[7]]`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: yeti
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align="center", warning=FALSE, message=FALSE)
+```
+
+```{r libraries, include=FALSE}
+library("ggplot2")
+library("tidyverse")
+library("ggpubr")
+library("knitr")
+library(reshape2)
+library(stringr)
+library(DT)
+library(RColorBrewer)
+library(htmltools)
+```
