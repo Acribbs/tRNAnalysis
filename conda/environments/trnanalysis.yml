@@ -4,15 +4,39 @@ channels:
  - conda-forge
  - bioconda
  - defaults
+ - r
 
 dependencies:
  - python
  - cgat-apps
  - cgatcore
+ - ez_setup
+ - numpy
  - pandas
  - pysam
  - ruffus
+ - seaborn
+ - setuptools
  - r-base
+ - bioconductor-deseq2
+ - bioconductor-org.hs.eg.db
+ - r-dplyr
+ - r-dt
+ - r-fastqcr
  - r-ggplot2
+ - r-ggpubr
+ - r-ggrepel
+ - r-ggthemes
+ - r-gridbase
+ - r-htmltools
+ - r-knitr
  - r-optparse
+ - r-pheatmap
+ - r-plotly
+ - r-rcolorbrewer
  - r-reshape2
+ - r-scales
+ - r-stringr
+ - r-tidyverse
+ - r-yaml
+
