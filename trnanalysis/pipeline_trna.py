@@ -222,7 +222,7 @@ def count_features(infiles, outfile):
     statement = """
                 featureCounts -t exon -g gene_id -a %(gtf)s -o featurecounts.dir/%(outfolder)s/%(intermediate)s %(bamfile)s &&
                 cut -f 1,7 featurecounts.dir/%(outfolder)s/%(intermediate)s > %(outfile)s 
-                """
+               """
 
     P.run(statement)
 
@@ -705,22 +705,26 @@ def profile_trna(infiles, outfile):
     the gene of the tRNA"""
 
     bamfile, bedfile = infiles
+    tmpfile = P.get_temp_file(".")
+    tmpfile_name = tmpfile.name
 
     statement = """cat %(bedfile)s |
-                   cgat bed2gff --as-gtf | gzip > tRNA-mapping.dir/tRNA-scan.gtf.gz &&
+                   cgat bed2gff --as-gtf > %(tmpfile_name)s &&
                    cgat bam2geneprofile 
                    --output-filename-pattern="%(outfile)s.%%s"
                    --force-output
                    --reporter=gene
                    --method=geneprofile
                    --bam-file=%(bamfile)s
-                   --gtf-file=tRNA-mapping.dir/tRNA-scan.gtf.gz
+                   --gtf-file=%(tmpfile_name)s
+                   --image-format=eps
+                   --output-res=600
                    | gzip
-                   > %(outfile)s
+                   > %(outfile)s 
                    """
 
     P.run(statement)
-
+    os.unlink(tmpfile_name)
 
 @transform(mature_trna_cluster,
            regex("tRNA-mapping.dir/(\S+).fa"),
