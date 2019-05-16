@@ -39,4 +39,5 @@ dependencies:
  - r-stringr
  - r-tidyverse
  - r-yaml
+ - r-knitr
 
