@@ -20,7 +20,7 @@ set -o xtrace
 # http://aplawrence.com/Basics/trapping_errors.html
 # https://stelfox.net/blog/2013/11/fail-fast-in-bash-scripts/
 
-set -o errtrace
+#set -o errtrace
 
 SCRIPT_NAME="$0"
 SCRIPT_PARAMS="$@"
@@ -213,21 +213,21 @@ conda_install() {
     conda update --all --yes
     conda info -a
 
-    log "installing CGAT environment"
+    log "installing tRNAnalysis environment"
     # Now using conda environment files:
     # https://conda.io/docs/using/envs.html#use-environment-from-file
 
     [[ -z ${TRAVIS_BRANCH} ]] && TRAVIS_BRANCH=${INSTALL_BRANCH}
-    curl -o env.yml -O https://raw.githubusercontent.com/Acribbs/tRNAnalysis${TRAVIS_BRANCH}/conda/environments/${CONDA_INSTALL_TYPE}
+    curl -o env.yml -O https://raw.githubusercontent.com/Acribbs/tRNAnalysis/${TRAVIS_BRANCH}/conda/environments/${CONDA_INSTALL_TYPE}
     conda env create --quiet --file env.yml
     
     conda env export --name ${CONDA_INSTALL_ENV}
 
-    # activate cgat environment
+    # activate trnanalysis environment
     log "activating environment"
     source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
 
-    log "installing CGAT code into conda environment"
+    log "installing trnanalysis code into conda environment"
     # if installation is 'devel' (outside of travis), checkout latest version from github
     if [[ -z ${TRAVIS_INSTALL} ]] ; then
 
@@ -263,7 +263,7 @@ conda_install() {
 		fi
 
 		# make sure you are in the INSTALL_HOME/trnanalysis folder
-		cd $INSTALL_HOME/trnanalysis
+		cd $INSTALL_HOME/tRNAnalysis
 
 	    fi
 
@@ -344,7 +344,7 @@ conda_test() {
     if [[ $TRAVIS_INSTALL ]] || [[ $JENKINS_INSTALL ]] ; then
 
 	# enable Conda env
-	log "activating CGAT conda environment"
+	log "activating trnanalysis conda environment"
 	source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
 
 	# show conda environment used for testing
@@ -371,7 +371,7 @@ conda_test() {
     else
 
 	source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
-	RET=$( (conda list | grep cgat-scripts) || true )
+	RET=$( (conda list | grep trnanalysis) || true )
 
 	if [[ -z "${RET}" ]] ; then
 	    # this is "cgat-devel" so tests can be run
