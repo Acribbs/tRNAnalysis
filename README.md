@@ -8,3 +8,9 @@ The pipeline can be used for evaluating the levels of small RNAs in a sample but
 
 Installation
 ------------
+
+Documentation
+-------------
+
+Further help that introduces tRNAnalysis and provides a tutorial of how to run example
+code can be found at `read the docs <https://trnanalysis.readthedocs.io/en/latest/>`_
