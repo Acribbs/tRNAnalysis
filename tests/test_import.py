@@ -31,8 +31,8 @@ from nose.tools import ok_
 
 # DIRECTORIES to examine
 EXPRESSIONS = (
-    ('FirstLevel', 'cgatcore/*.py'),
-    ('SecondLevel', 'cgatcore/pipeline/*.py'))
+    ('FirstLevel', 'trnanalysis/*.py'),
+    ('SecondLevel', 'trnanalysis/python/*.py'))
 
 # Code to exclude
 EXCLUDE = ()
