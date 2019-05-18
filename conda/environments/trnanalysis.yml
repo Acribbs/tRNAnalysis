@@ -12,6 +12,8 @@ dependencies:
  - cgat-apps
  - subread
  - pytest
+ - nose
+ - pep8
  - sortedcontainers
  - seqtk
  - trnascan-se
