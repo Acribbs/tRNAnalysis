@@ -213,7 +213,7 @@ conda_install() {
     conda update --all --yes
     conda info -a
 
-    log "installing CGAT environment"
+    log "installing tRNAnalysis environment"
     # Now using conda environment files:
     # https://conda.io/docs/using/envs.html#use-environment-from-file
 
@@ -223,11 +223,11 @@ conda_install() {
     
     conda env export --name ${CONDA_INSTALL_ENV}
 
-    # activate cgat environment
+    # activate trnanalysis environment
     log "activating environment"
     source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
 
-    log "installing CGAT code into conda environment"
+    log "installing trnanalysis code into conda environment"
     # if installation is 'devel' (outside of travis), checkout latest version from github
     if [[ -z ${TRAVIS_INSTALL} ]] ; then
 
@@ -248,9 +248,9 @@ conda_install() {
 		    rm $INSTALL_BRANCH.zip
 		    if [[ ${RELEASE} ]] ; then
 			NEW_NAME=`echo $INSTALL_BRANCH | sed 's/^v//g'`
-			mv tRNAnalysis-$NEW_NAME/ tRNAnalysis/
+			mv trnanalysis-$NEW_NAME/ trnanalysis/
 		    else
-			mv tRNAnalysis-$INSTALL_BRANCH/ tRNAnalysis/
+			mv trnanalysis-$INSTALL_BRANCH/ trnanalysis/
 		    fi
 		elif [[ $CODE_DOWNLOAD_TYPE -eq 1 ]] ; then
 		    # get latest version from Git Hub with git clone
@@ -344,7 +344,7 @@ conda_test() {
     if [[ $TRAVIS_INSTALL ]] || [[ $JENKINS_INSTALL ]] ; then
 
 	# enable Conda env
-	log "activating CGAT conda environment"
+	log "activating trnanalysis conda environment"
 	source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
 
 	# show conda environment used for testing
@@ -377,7 +377,7 @@ conda_test() {
 	    # this is "cgat-devel" so tests can be run
 
 	    # make sure you are in the INSTALL_HOME/trnanalysis folder
-	    cd $INSTALL_HOME/tRNAnalysis
+	    cd $INSTALL_HOME/trnanalysis
 
 	    # remove install_requires (no longer required with conda package)
 	    sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
