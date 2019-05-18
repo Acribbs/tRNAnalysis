@@ -42,7 +42,7 @@ error_handler() {
     echo " ${SCRIPT_NAME} ${SCRIPT_PARAMS}"
     echo
     echo " Please copy and paste this error and report it via Git Hub: "
-    echo " https://github.com/cgat-developers/cgat-core/issues "
+    echo " https://github.com/Acribbs/tRNAnalysis/issues "
     print_env_vars
     echo " ########################################################## "
 }
@@ -51,7 +51,7 @@ trap 'error_handler ${LINENO} $? ${BASH_COMMAND}' ERR INT TERM
 
 # log installation information
 log() {
-    echo "# install-CGAT-tools.sh log | `hostname` | `date` | $1 "
+    echo "# install.sh log | `hostname` | `date` | $1 "
 }
 
 # report error and exit
@@ -64,52 +64,35 @@ report_error() {
     exit 1
 }
 
-# detect CGAT installation
-detect_cgat_installation() {
+# detect trnanalysis installation
+detect_trnanalysis_installation() {
 
-    if [[ -z "$CGAT_HOME" ]] ; then
+    if [[ -z "$INSTALL_HOME" ]] ; then
 
-	if [[ -d "$HOME/cgat-install/conda-install" ]] ; then
-	    UNINSTALL_DIR="$HOME/cgat-install"
+	if [[ -d "$HOME/trnanalysis-install/conda-install" ]] ; then
+	    UNINSTALL_DIR="$HOME/trnanalysis-install"
 	fi
 
     else
 
-	if [[ -d "$CGAT_HOME/conda-install" ]] ; then
-	    UNINSTALL_DIR="$CGAT_HOME"
+	if [[ -d "$INSTALL_HOME/conda-install" ]] ; then
+	    UNINSTALL_DIR="$INSTALL_HOME"
 	fi
 
     fi
 
-} # detect_cgat_installation
+} # detect_trnanalysis_installation
 
 
 # configure environment variables 
-# set: CGAT_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
-get_cgat_env() {
+# set: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
+get_trnanalysis_env() {
+    INSTALL_HOME=$TRAVIS_BUILD_DIR
+    CONDA_INSTALL_TYPE="trnanalysis.yml"
+    CONDA_INSTALL_DIR=$INSTALL_HOME/conda-install
+    CONDA_INSTALL_ENV="trnanalysis"
 
-    if [[ $TRAVIS_INSTALL ]] ; then
-
-	CGAT_HOME=$TRAVIS_BUILD_DIR
-	CONDA_INSTALL_TYPE="cgat-core.yml"
-
-    elif [[ $JENKINS_INSTALL ]] ; then
-
-	CGAT_HOME=$WORKSPACE
-	CONDA_INSTALL_TYPE="cgat-core.yml"
-
-    else
-	if [[ -z $CGAT_HOME  ]] ; then
-	    CGAT_HOME=$HOME/cgat-install
-	fi
-	CONDA_INSTALL_TYPE="cgat-core.yml"	
-
-    fi # if travis install
-
-    CONDA_INSTALL_DIR=$CGAT_HOME/conda-install
-    CONDA_INSTALL_ENV="cgat-core"
-
-} # get_cgat_env
+} # get_trnanalysis_env
 
 
 # setup environment variables
@@ -135,7 +118,7 @@ print_env_vars() {
     echo " CPLUS_INCLUDE_PATH: "$CPLUS_INCLUDE_PATH
     echo " LIBRARY_PATH: "$LIBRARY_PATH
     echo " LD_LIBRARY_PATH: "$LD_LIBRARY_PATH
-    echo " CGAT_HOME: "$CGAT_HOME
+    echo " INSTALL_HOME: "$INSTALL_HOME
     echo " CONDA_INSTALL_DIR: "$CONDA_INSTALL_DIR
     echo " CONDA_INSTALL_TYPE: "$CONDA_INSTALL_TYPE
     echo " CONDA_INSTALL_ENV: "$CONDA_INSTALL_ENV
@@ -165,13 +148,13 @@ conda_install() {
 
     log "installing conda"
 
-    detect_cgat_installation
+    detect_trnanalysis_installation
 
     if [[ -n "$UNINSTALL_DIR" ]] ; then
 
 	echo
-	echo " An installation of the CGAT code was found in: $UNINSTALL_DIR"
-	echo " Please use --location to install CGAT code in a different location "
+	echo " An installation of the trnanalysis code was found in: $UNINSTALL_DIR"
+	echo " Please use --location to install trnanalysis code in a different location "
 	echo " or uninstall the current version before proceeding."
 	echo
 	echo " Installation is aborted."
@@ -180,11 +163,11 @@ conda_install() {
 
     fi
 
-    # get environment variables: CGAT_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
-    get_cgat_env
+    # get environment variables: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
+    get_trnanalysis_env
 
-    mkdir -p $CGAT_HOME
-    cd $CGAT_HOME
+    mkdir -p $INSTALL_HOME
+    cd $INSTALL_HOME
 
     # select Miniconda bootstrap script depending on Operating System
     MINICONDA=
@@ -235,7 +218,7 @@ conda_install() {
     # https://conda.io/docs/using/envs.html#use-environment-from-file
 
     [[ -z ${TRAVIS_BRANCH} ]] && TRAVIS_BRANCH=${INSTALL_BRANCH}
-    curl -o env.yml -O https://raw.githubusercontent.com/cgat-developers/cgat-core/${TRAVIS_BRANCH}/conda/environments/${CONDA_INSTALL_TYPE}
+    curl -o env.yml -O https://raw.githubusercontent.com/Acribbs/tRNAnalysis${TRAVIS_BRANCH}/conda/environments/${CONDA_INSTALL_TYPE}
     conda env create --quiet --file env.yml
     
     conda env export --name ${CONDA_INSTALL_ENV}
@@ -255,32 +238,32 @@ conda_install() {
 	    # download the code out of jenkins
 	    if [[ -z ${JENKINS_INSTALL} ]] ; then
 
-		# make sure you are in the CGAT_HOME folder
-		cd $CGAT_HOME
+		# make sure you are in the INSTALL_HOME folder
+		cd $INSTALL_HOME
 
 		if [[ $CODE_DOWNLOAD_TYPE -eq 0 ]] ; then
 		    # get the latest version from Git Hub in zip format
-		    curl -LOk https://github.com/cgat-developers/cgat-core/archive/$INSTALL_BRANCH.zip
+		    curl -LOk https://github.com/Acribbs/tRNAnalysis/archive/$INSTALL_BRANCH.zip
 		    unzip $INSTALL_BRANCH.zip
 		    rm $INSTALL_BRANCH.zip
 		    if [[ ${RELEASE} ]] ; then
 			NEW_NAME=`echo $INSTALL_BRANCH | sed 's/^v//g'`
-			mv cgat-core-$NEW_NAME/ cgat-core/
+			mv trnanalysis-$NEW_NAME/ trnanalysis/
 		    else
-			mv cgat-core-$INSTALL_BRANCH/ cgat-core/
+			mv trnanalysis-$INSTALL_BRANCH/ trnanalysis/
 		    fi
 		elif [[ $CODE_DOWNLOAD_TYPE -eq 1 ]] ; then
 		    # get latest version from Git Hub with git clone
-		    git clone --branch=$INSTALL_BRANCH https://github.com/cgat-developers/cgat-core.git
+		    git clone --branch=$INSTALL_BRANCH https://github.com/Acribbs/tRNAnalysis.git
 		elif [[ $CODE_DOWNLOAD_TYPE -eq 2 ]] ; then
 		    # get latest version from Git Hub with git clone
-		    git clone --branch=$INSTALL_BRANCH git@github.com:cgat-developers/cgat-core.git
+		    git clone --branch=$INSTALL_BRANCH git@github.com:Acribbs/tRNAnalysis.git
 		else
-		    report_error " Unknown download type for CGAT code... "
+		    report_error " Unknown download type for trnanalysis code... "
 		fi
 
-		# make sure you are in the CGAT_HOME/cgat-core folder
-		cd $CGAT_HOME/cgat-core
+		# make sure you are in the INSTALL_HOME/trnanalysis folder
+		cd $INSTALL_HOME/trnanalysis
 
 	    fi
 
@@ -291,7 +274,7 @@ conda_install() {
 	    # remove install_requires (no longer required with conda package)
 	    sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
 	    sed -i'' -e '/# dependencies/,/dependency_links=dependency_links,/d' setup.py
-	    log "installing cgat-core repo"
+	    log "installing trnanalysis repo"
 	    python setup.py develop
 
 	    if [[ $? -ne 0 ]] ; then
@@ -300,7 +283,7 @@ conda_install() {
 		echo " Installation did not finish properly. "
 		echo 
 		echo " Please submit this issue via Git Hub: "
-		echo " https://github.com/cgat-developers/cgat-core/issues "
+		echo " https://github.com/Acribbs/tRNAnalysis/issues "
 		echo
 
 		print_env_vars
@@ -322,7 +305,7 @@ conda_install() {
 	    echo " Installation did not finish properly. "
 	    echo
 	    echo " Please submit this issue via Git Hub: "
-	    echo " https://github.com/cgat-developers/cgat-core/issues "
+	    echo " https://github.com/Acribbs/tRNAnalysis/issues "
 	    echo
 
 	    print_env_vars
@@ -352,8 +335,8 @@ conda_test() {
 
     log "starting conda_test"
 
-    # get environment variables: CGAT_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
-    get_cgat_env
+    # get environment variables: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
+    get_trnanalysis_env
 
     setup_env_vars
 
@@ -369,7 +352,7 @@ conda_test() {
 
 	# python preparation
 	log "install CGAT code into conda environment"
-	cd $CGAT_HOME
+	cd $INSTALL_HOME
 	# remove install_requires (no longer required with conda package)
 	sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
 	sed -i'' -e '/# dependencies/,/dependency_links=dependency_links,/d' setup.py
@@ -393,8 +376,8 @@ conda_test() {
 	if [[ -z "${RET}" ]] ; then
 	    # this is "cgat-devel" so tests can be run
 
-	    # make sure you are in the CGAT_HOME/cgat-core folder
-	    cd $CGAT_HOME/cgat-core
+	    # make sure you are in the INSTALL_HOME/trnanalysis folder
+	    cd $INSTALL_HOME/trnanalysis
 
 	    # remove install_requires (no longer required with conda package)
 	    sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
@@ -436,8 +419,8 @@ conda_test() {
 # update conda installation
 conda_update() {
 
-    # get environment variables: CGAT_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
-    get_cgat_env
+    # get environment variables: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
+    get_trnanalysis_env
 
     source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
     conda update --all
@@ -448,7 +431,7 @@ conda_update() {
 	echo " There was a problem updating the installation. "
 	echo 
 	echo " Please submit this issue via Git Hub: "
-	echo " https://github.com/cgat-developers/cgat-core/issues "
+	echo " https://github.com/Acribbs/tRNAnalysis/issues "
 	echo 
 
     else 
@@ -465,7 +448,7 @@ conda_update() {
 # unistall CGAT code collection
 uninstall() {
 
-    detect_cgat_installation
+    detect_trnanalysis_installation
 
     if [[ -z "$UNINSTALL_DIR" ]] ; then
 
@@ -538,17 +521,17 @@ test_mix_branch_release() {
 }
 
 
-# test whether a branch exists in the cgat-core repository
+# test whether a branch exists in the trnanalysis repository
 # https://stackoverflow.com/questions/12199059/how-to-check-if-an-url-exists-with-the-shell-and-probably-curl
 test_core_branch() {
     RELEASE_TEST=0
-    curl --output /dev/null --silent --head --fail https://raw.githubusercontent.com/cgat-developers/cgat-core/${INSTALL_BRANCH}/README.rst || RELEASE_TEST=$?
+    curl --output /dev/null --silent --head --fail https://raw.githubusercontent.com/Acribbs/tRNAnalysis/${INSTALL_BRANCH}/README.rst || RELEASE_TEST=$?
     if [[ ${RELEASE_TEST} -ne 0 ]] ; then
 	echo
-	echo " The branch provided for cgat-core does not exist: ${INSTALL_BRANCH}"
+	echo " The branch provided for trnanalysis does not exist: ${INSTALL_BRANCH}"
 	echo
 	echo " Please have a look at valid branches here: "
-	echo " https://github.com/cgat-developers/cgat-core/branches"
+	echo " https://github.com/Acribbs/tRNAnalysis/branches"
 	echo
 	report_error " Please use a valid branch and try again."
     fi
@@ -559,13 +542,13 @@ test_core_branch() {
 # https://stackoverflow.com/questions/12199059/how-to-check-if-an-url-exists-with-the-shell-and-probably-curl
 test_release() {
     RELEASE_TEST=0
-    curl --output /dev/null --silent --head --fail https://raw.githubusercontent.com/cgat-developers/cgat-core/${RELEASE}/README.rst || RELEASE_TEST=$?
+    curl --output /dev/null --silent --head --fail https://raw.githubusercontent.com/Acribbs/tRNAnalysis/${RELEASE}/README.rst || RELEASE_TEST=$?
     if [[ ${RELEASE_TEST} -ne 0 ]] ; then
 	echo
 	echo " The release number provided does not exist: ${RELEASE}"
 	echo
 	echo " Please have a look at valid releases here: "
-	echo " https://github.com/cgat-developers/cgat-core/releases"
+	echo " https://github.com/Acribbs/tRNAnalysis/releases"
 	echo
 	echo " An example of valid release is: --release v0.4.0"
 	report_error " Please use a valid release and try again."
@@ -592,7 +575,7 @@ cleanup_env() {
 # function to display help message
 help_message() {
     echo
-    echo " This script uses Conda to install cgat-core. To proceed, please type:"
+    echo " This script uses Conda to install trnanalysis. To proceed, please type:"
     echo " ./install.sh [--location </full/path/to/folder/without/trailing/slash>]"
     echo
     echo " The default install folder will be: $HOME/cgat-install"
@@ -600,7 +583,7 @@ help_message() {
     echo " It will create a new Conda environment ready to run the CGAT code."
     echo
     echo " By default the master branch will be installed:"
-    echo " https://github.com/cgat-developers/cgat-core"
+    echo " https://github.com/Acribbs/tRNAnalysis/"
     echo
     echo " Change that with:"
     echo " ./install.sh  --branch <name-of-branch>"
@@ -615,7 +598,7 @@ help_message() {
     echo " ./install.sh --uninstall [--location </full/path/to/folder/without/trailing/slash>]"
     echo
     echo " Please submit any issues via Git Hub:"
-    echo " https://github.com/cgat-developers/cgat-core/issues"
+    echo " https://github.com/Acribbs/tRNAnalysis/issues"
     echo
     exit 1
 } # help_message
@@ -639,12 +622,12 @@ INSTALL_DEVEL=
 INSTALL_TEST=
 # update current installation
 INSTALL_UPDATE=
-# uninstall CGAT code
+# uninstall code
 UNINSTALL=
 UNINSTALL_DIR=
-# where to install CGAT code
-CGAT_HOME=
-# how to download CGAT code:
+# where to install code
+INSTALL_HOME=
+# how to download code:
 # 0 = as zip (default)
 # 1 = git clone with https
 # 2 = git clone with ssh
@@ -717,7 +700,7 @@ do
 	    ;;
 
 	--location)
-	    CGAT_HOME="$2"
+	    INSTALL_HOME="$2"
 	    shift 2
 	    ;;
 
@@ -754,9 +737,9 @@ fi
 
 # sanity check 3: make sure there is space available in the destination folder (10 GB) in 512-byte blocks
 [[ -z ${TRAVIS_INSTALL} ]] && \
-    mkdir -p ${CGAT_HOME} && \
-    [[ `df -P ${CGAT_HOME} | awk '/\// {print $4}'` -lt 20971520  ]] && \
-    report_error " Not enough disk space available on the installation folder: "$CGAT_HOME
+    mkdir -p ${INSTALL_HOME} && \
+    [[ `df -P ${INSTALL_HOME} | awk '/\// {print $4}'` -lt 20971520  ]] && \
+    report_error " Not enough disk space available on the installation folder: "$INSTALL_HOME
 
 # perform actions according to the input parameters processed
 if [[ $TRAVIS_INSTALL ]] || [[ $JENKINS_INSTALL  ]] ; then
