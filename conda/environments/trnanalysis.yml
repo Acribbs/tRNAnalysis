@@ -7,8 +7,14 @@ channels:
  - r
 
 dependencies:
- - python
+ - python >= 3.6
+ - mysqlclient
  - cgat-apps
+ - subread
+ - sortedcontainers
+ - seqtk
+ - trnascan-se
+ - configparser
  - cgatcore
  - ez_setup
  - numpy
@@ -17,6 +23,9 @@ dependencies:
  - ruffus
  - seaborn
  - setuptools
+ - bowtie
+ - fastqc
+ - fastq-screen
  - r-base
  - bioconductor-deseq2
  - bioconductor-org.hs.eg.db
