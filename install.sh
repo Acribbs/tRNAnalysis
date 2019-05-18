@@ -20,7 +20,7 @@ set -o xtrace
 # http://aplawrence.com/Basics/trapping_errors.html
 # https://stelfox.net/blog/2013/11/fail-fast-in-bash-scripts/
 
-set -o errtrace
+#set -o errtrace
 
 SCRIPT_NAME="$0"
 SCRIPT_PARAMS="$@"
@@ -90,7 +90,7 @@ get_trnanalysis_env() {
     INSTALL_HOME=$TRAVIS_BUILD_DIR
     CONDA_INSTALL_TYPE="trnanalysis.yml"
     CONDA_INSTALL_DIR=$INSTALL_HOME/conda-install
-    CONDA_INSTALL_ENV="trnanalysis"
+    CONDA_INSTALL_ENV="tRNAnalysis"
 
 } # get_trnanalysis_env
 
@@ -248,9 +248,9 @@ conda_install() {
 		    rm $INSTALL_BRANCH.zip
 		    if [[ ${RELEASE} ]] ; then
 			NEW_NAME=`echo $INSTALL_BRANCH | sed 's/^v//g'`
-			mv trnanalysis-$NEW_NAME/ trnanalysis/
+			mv tRNAnalysis-$NEW_NAME/ tRNAnalysis/
 		    else
-			mv trnanalysis-$INSTALL_BRANCH/ trnanalysis/
+			mv tRNAnalysis-$INSTALL_BRANCH/ tRNAnalysis/
 		    fi
 		elif [[ $CODE_DOWNLOAD_TYPE -eq 1 ]] ; then
 		    # get latest version from Git Hub with git clone
@@ -263,7 +263,7 @@ conda_install() {
 		fi
 
 		# make sure you are in the INSTALL_HOME/trnanalysis folder
-		cd $INSTALL_HOME/trnanalysis
+		cd $INSTALL_HOME/tRNAnalysis
 
 	    fi
 
@@ -371,13 +371,13 @@ conda_test() {
     else
 
 	source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
-	RET=$( (conda list | grep cgat-scripts) || true )
+	RET=$( (conda list | grep trnanalysis) || true )
 
 	if [[ -z "${RET}" ]] ; then
 	    # this is "cgat-devel" so tests can be run
 
 	    # make sure you are in the INSTALL_HOME/trnanalysis folder
-	    cd $INSTALL_HOME/trnanalysis
+	    cd $INSTALL_HOME/tRNAnalysis
 
 	    # remove install_requires (no longer required with conda package)
 	    sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
