@@ -90,7 +90,7 @@ get_trnanalysis_env() {
     INSTALL_HOME=$TRAVIS_BUILD_DIR
     CONDA_INSTALL_TYPE="trnanalysis.yml"
     CONDA_INSTALL_DIR=$INSTALL_HOME/conda-install
-    CONDA_INSTALL_ENV="tRNAnalysis"
+    CONDA_INSTALL_ENV="trnanalysis"
 
 } # get_trnanalysis_env
 
