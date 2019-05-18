@@ -73,7 +73,7 @@ setup(
     version=version,
     description='tRNAnalysis : this software will perform alignment of reads to tRNA ',
     author='Adam Cribbs',
-    author_email='adam.cribbs AT imm.ox.ac.uk',
+    author_email='adam.cribbs@imm.ox.ac.uk',
     license="MIT",
     platforms=["any"],
     keywords="computational genomics",
