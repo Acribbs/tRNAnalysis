@@ -714,8 +714,6 @@ def profile_trna(infiles, outfile):
                    --method=geneprofile
                    --bam-file=%(bamfile)s
                    --gtf-file=%(tmpfile_name)s
-                   --image-format=eps
-                   --output-res=600
                    | gzip
                    > %(outfile)s 
                    """
