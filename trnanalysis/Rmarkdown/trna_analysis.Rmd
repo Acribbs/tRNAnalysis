@@ -49,7 +49,7 @@ knitr::include_graphics(files)
 # tRNA cleaveage plots
 
 ```{r }
-files <- normalizePath(list.files(path="../tRNA-end-site.dir/", include.dirs= T, pattern="*cluster3:GlyCCC.eps",all.files=T, full.names=T, no.. = T, recursive = T)) 
+files <- normalizePath(list.files(path="../tRNA-end-site.dir/", include.dirs= T, pattern="*cluster3:GlyCCC.png",all.files=T, full.names=T, no.. = T, recursive = T)) 
 
 data <- as.data.frame(melt(as.list(files)))
 colnames(data) <- c("File", "File_number")
