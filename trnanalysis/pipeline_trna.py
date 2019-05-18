@@ -391,7 +391,7 @@ def genome_coverage(infiles, outfile):
 ################################################
 
 @active_if(PARAMS['trna_scan_load'])
-@follows(mkdir("tRNAscan_load.dir"))
+@follows(mkdir("tRNA-mapping.dir"))
 @originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
 def trna_scan_load(outfile):
     """ If already downloaded trna nuclear genome from http://gtrnadb.ucsc.edu/index.html """
@@ -415,19 +415,16 @@ def trna_scan_load(outfile):
 @originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
 def trna_scan_nuc(outfile):
     """Scans genome using tRNAscanSE to identify nuclear tRNA"""
-    if( PARAMS['index_run']):
 
-        genome = os.path.join(PARAMS['genome_dir'], PARAMS['genome'] + ".fa")
+    genome = os.path.join(PARAMS['genome_dir'], PARAMS['genome'] + ".fa")
 
-        statement = "tRNAscan-SE -q %(genome)s 2> tRNA-mapping.dir/tRNAscan.nuc.log | sed 1,3d > %(outfile)s"
+    statement = "tRNAscan-SE -q %(genome)s 2> tRNA-mapping.dir/tRNAscan.nuc.log | sed 1,3d > %(outfile)s"
 
 # Need to modify if working with non eukaryotic organisms in pipeline.yml- -E to -U
-        job_memory = "50G"
+    job_memory = "50G"
 
-        P.run(statement)
-    else:
-        indexed_genome = os.path.join(PARAMS['index_genome_dir'], PARAMS['index_genome'] + ".nuc.csv")
-        os.symlink(indexed_genome, 'tRNA-mapping.dir/tRNAscan.nuc.csv')
+    P.run(statement)
+
 # softlink to location of nuc.csv file
 # Need option if downloaded from database
 
