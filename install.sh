@@ -585,7 +585,7 @@ done
 # sanity check 2: make sure one installation option is selected
 if [[ -z $INSTALL_TEST ]] && \
        [[ -z $INSTALL_DEVEL ]] && \
-       [[ -z $TRAVIS_INSTALL ]] && ; then
+       [[ -z $TRAVIS_INSTALL ]] ; then
 
     report_error " You need to select either --devel or --production. "
 
