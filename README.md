@@ -1,6 +1,4 @@
-===========
-tRNAnalysis
-===========
+# tRNAnalysis
 
 <p align="left">
 	<a href="https://readthedocs.org/projects/trnanalysis/badge/?version=latest", alt="Documentation">
@@ -17,19 +15,18 @@ This workflow was generated as a response to not being able to effectively analy
 
 The pipeline can be used for evaluating the levels of small RNAs in a sample but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment analysis.
 
-Installation
-============
+## Installation
 
-Conda installation
-------------------
+
+### Conda installation
+
 The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). 
 
 To install trnanalysis using conda::
     
     conda install -c bioconda trnanalysis
 
-Manual installation
--------------------
+### Manual installation
 
 Alternatively, you can manusally install tRNAnalysis by::
 
@@ -38,8 +35,7 @@ Alternatively, you can manusally install tRNAnalysis by::
     python setup.py install
     trnanalysis --help
     
-Usage
-=====
+## Usage
 
 Run the ``trnanalysis --help`` command view the help documentation for how to run tRNAnalysis.
 
@@ -56,8 +52,7 @@ Running locally or on a cluster - the default setting to run trnanalysis is on a
 currently supported. However, if you dont have access to a cluster then tRNAnalsysis can be executed locally by adding `--no-cluster` as a 
 commandline argument. 
 
-Documentation
-=============
+## Documentation
 
 Further help that introduces tRNAnalysis and provides a tutorial of how to run example
 code can be found at [read the docs](https://trnanalysis.readthedocs.io/en/latest/)
