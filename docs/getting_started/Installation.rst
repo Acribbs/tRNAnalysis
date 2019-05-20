@@ -19,7 +19,7 @@ tRNAnalysis is currently installed using the bioconda channel and the recipe can
 
     conda install - bioconda trnanalysis
 
-Temporarily, we have also hosted a linux version on anaconda which can downloaded as follows::
+Temporarily, we have also hosted a linux version only on anaconda which can downloaded as follows::
 
     conda install -c cgat trnanalysis
 
@@ -28,7 +28,7 @@ Temporarily, we have also hosted a linux version on anaconda which can downloade
 
 Pip installation
 ----------------
-We recommend installation through conda because it manages the dependancies. However, tRNAnalysis
+We recommend installation through conda because it manages the dependancies. Despite this, tRNAnalysis
 can also be installed easily using the pip package manager. However, you will also have to
 install other dependancies manually::
 
@@ -41,7 +41,7 @@ install other dependancies manually::
 Manual installation
 -------------------
 
-To obtain the latest code, check it out from the public git_ repository and activate it::
+To obtain the latest code, check it out from the public git repository and activate it::
 
    git clone https://github.com/Acribbs/tRNAnalysis.git
    cd tRNAnalysis
@@ -49,7 +49,7 @@ To obtain the latest code, check it out from the public git_ repository and acti
 
 Once checked-out, you can get the latest changes via pulling::
 
-   git pull 
+   git pull origin master
 
 
 .. _getting_started-Additional:

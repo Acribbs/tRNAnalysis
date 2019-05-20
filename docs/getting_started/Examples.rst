@@ -20,9 +20,12 @@ This pipeline requires the following input:
  * a single end fastq file - if you have paired end data we recoment flashing the reads together
  to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
- * ensembl gtf: can be downloaded from 
+ * ensembl gtf: can be downloaded from
 
-Inputs to run the pipeline are found at this location: <insert url to location>
+**Optionally** to make the pipeline run faster you can also use a downloaded tRNAscan-SE output from the
+`GtRNAdb <http://gtrnadb.ucsc.edu>`_. If you access a genome in the database (eg `hg19 <http://gtrnadb.ucsc.edu/genomes/eukaryota/Hsapi19/>`_) then on the left hand panel you will see a tab "Download tRNAscan-SE Results".
+
+Inputs to run the pipeline are found at this location: https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
 
 .. _getting_started-setting-up-pipeline:
 
@@ -31,7 +34,7 @@ Setting up the pipeline
 
 **Step 1**: Install tRNAnalysis:
 
-Check that your computing environment is appropriate and follow tRNAnalysis installation instructions (see `Installation instructions <>`_).
+Check that your computing environment is appropriate and follow tRNAnalysis installation instructions (see `Installation instructions <https://trnanalysis.readthedocs.io/en/latest/getting_started/Installation.html>`_).
 
 **Step2**: To run a pipeline you will need to create a working directory
 and enter it. For example::
@@ -39,23 +42,14 @@ and enter it. For example::
    mkdir version1
    cd version1/
 
-This is where the toy example pipeline will be executed and files will be generated in this
-directory.
-
-However, the tRNAnalysis example comes with test data and this can be downloaded by running::
-
-	wget <>
-	tar -zxvf <>
-	cd <>
-
-**Step 4**: Configure the cluster
+**Step 3**: Configure the cluster
 
 Running pipelines on a cluster required the drmaa API settings to be configures and passed
 to cgatcore. The default cluster engine is SGE, however we also support SLURM and Torque/PBSpro.
 In order to execute using a non SGE cluster you will need to setup a `.cgat.yml` file in your
 home directory and specify parameters according to the `cluster configuration documentation <https://cgat-core.readthedocs.io/en/latest/getting_started/Cluster_config.html>`_.
 
-**Step 5**: tRNAnalysis is written with minimal hard coded options. Therefore,
+**Step 4**: tRNAnalysis is written with minimal hard coded options. Therefore,
 to run tRNAnalysis an initial configuration file needs to be
 generated. A configuration file with all the default values can be obtained by
 running::
@@ -68,10 +62,9 @@ FILE**. The default values are unlikely to be configured correctly for your data
 configuration file should be well documented in CGAT-core and the format is
 a simple yaml file. 
 
-**Step 6**: Add the input files. The input files are required to be in the directory that tRNAnalysis
-will be ran in. 
+**Step 5**: Add the input files. The input files are required to be in the directory that tRNAnalysis will be ran in. 
 
-**Step 7**: You can check if all the external dependencies to tools and
+**Step 6**: You can check if all the external dependencies to tools and
 R packages are satisfied by running::
 
       trnanalysis trna check
