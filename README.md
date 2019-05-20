@@ -1,3 +1,4 @@
+===========
 tRNAnalysis
 ===========
 
@@ -17,10 +18,46 @@ This workflow was generated as a response to not being able to effectively analy
 The pipeline can be used for evaluating the levels of small RNAs in a sample but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment analysis.
 
 Installation
-------------
+============
+
+Conda installation
+------------------
+The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). 
+
+To install trnanalysis using conda::
+    
+    conda install -c bioconda trnanalysis
+
+Manual installation
+-------------------
+
+Alternatively, you can manusally install tRNAnalysis by::
+
+    git clone https://github.com/Acribbs/tRNAnalysis.git
+    cd tRNAnalysis
+    python setup.py install
+    trnanalysis --help
+    
+Usage
+=====
+
+Run the ``trnanalysis --help`` command view the help documentation for how to run tRNAnalysis.
+
+To run the main trnanalysis pipeline run::
+
+   trnanalysis trna make full -v5
+
+In order to run and generate the multiQC report to identify read quality and Rmarkdown html report
+for the tRNA analysis run::
+
+    trnanalysis trna make build_report -v5
+    
+Running locally or on a cluster - the default setting to run trnanalysis is on a cluster, with SLURM, SGC, Torque and PBS/pro
+currently supported. However, if you dont have access to a cluster then tRNAnalsysis can be executed locally by adding `--no-cluster` as a 
+commandline argument. 
 
 Documentation
--------------
+=============
 
 Further help that introduces tRNAnalysis and provides a tutorial of how to run example
 code can be found at [read the docs](https://trnanalysis.readthedocs.io/en/latest/)
