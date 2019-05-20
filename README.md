@@ -4,7 +4,7 @@
 	<a href="https://readthedocs.org/projects/trnanalysis/badge/?version=latest", alt="Documentation">
 		<img src="https://readthedocs.org/projects/trnanalysis/badge/?version=latest" /></a>
 	<a href="https://travis-ci.com/Acribbs/tRNAnalysis.svg?branch=master", alt="Travis">
-		<img src="https://travis-ci.com/Acribbs/tRNAnalysis/tRNAnalysis.svg" /></a>
+		<img src="https://api.travis-ci.com/Acribbs/tRNAnalysis.svg?branch=master" /></a>
 	<a href="https://twitter.com/CribbsP?lang=en", alt="Twitter followers">
 		<img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter" /></a>
 	<a href="https://twitter.com/CribbsP?lang=en", alt="Twitter followers">
