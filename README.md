@@ -11,9 +11,9 @@
 		<img src="https://img.shields.io/twitter/url/http/shields.io.svg?style=social&logo=twitter" /></a>
 </p>
 
-This workflow was generated as a response to not being able to effectively analyse tRNA data from next generation sequencing experiments. Typical workflows are not very flexible and do not scale well for multiple samples. Moreover, most do not impliment best-practice mapping strategies or generate detailed analysis reports to aid biological interpretation.
+This workflow was generated as a response to not being able to effectively analyse tRNA data from next generation sequencing experiments rapidly and robustly. Typical workflows are not very flexible and do not scale well for multiple samples. Moreover, most do not impliment best-practice mapping strategies or generate detailed analysis reports to aid biological interpretation.
 
-The pipeline can be used for evaluating the levels of small RNAs in a sample but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment analysis.
+Our pipeline can be used for evaluating the levels of small RNAs in a sample, but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment analysis.The pipeline is in constant development and further features will be added in the future. For example, we will extend our pipeline to perform detailed anaysis of miRNAs and plan to write an R shiny framework for interactive report features.
 
 ## Installation
 
