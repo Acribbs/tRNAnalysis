@@ -41,7 +41,7 @@ Run the ``trnanalysis --help`` command view the help documentation for how to ru
 
 To run the main trnanalysis pipeline run::
 
-   trnanalysis trna make full -v5
+    trnanalysis trna make full -v5
 
 In order to run and generate the multiQC report to identify read quality and Rmarkdown html report
 for the tRNA analysis run::
