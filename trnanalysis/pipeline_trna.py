@@ -176,7 +176,7 @@ def map_with_bowtie(infiles, outfile):
                    samtools sort -T %(temp_file)s -o %(outfile)s &&
                    samtools index %(outfile)s
                 """
-
+    job_memory = "15G"
     P.run(statement)
 
 
