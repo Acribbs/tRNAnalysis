@@ -17,10 +17,9 @@ Introduction
 
 This pipeline requires the following input:
 
- * a single end fastq file - if you have paired end data we recoment flashing the reads together
- to make a single file or only using the first read of your paired end data.
+ * a single end fastq file - if you have paired end data we recoment flashing the reads together to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
- * ensembl gtf: can be downloaded from 
+ * ensembl gtf: can be downloaded from `ensembl downloader page <https://www.ensembl.org/info/data/ftp/index.html>`_
 
 Inputs to run the pipeline are found at this location: <insert url to location>
 
@@ -44,9 +43,9 @@ directory.
 
 However, the tRNAnalysis example comes with test data and this can be downloaded by running::
 
-	wget <>
-	tar -zxvf <>
-	cd <>
+	wge https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
+	tar -zxvf test_trna.tar.gz
+	cd test_trna
 
 **Step 4**: Configure the cluster
 
