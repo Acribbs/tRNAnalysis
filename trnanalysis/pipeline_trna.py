@@ -411,7 +411,6 @@ def trna_scan_nuc(outfile):
 # softlink to location of nuc.csv file
 # Need option if downloaded from database
 
-@follows(trna_scan_load)
 @follows(trna_scan_nuc)
 @transform(["tRNA-mapping.dir/tRNAscan.nuc.csv"],
            regex("tRNA-mapping.dir/(\S+).nuc.csv"),
