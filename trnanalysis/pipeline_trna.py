@@ -388,26 +388,8 @@ def genome_coverage(infiles, outfile):
 
 ################################################
 # Perform mapping of tRNA's as set out in Hoffmann et al 2018
-################################################
+################################################  
 
-@active_if(PARAMS['trna_scan_load'])
-@follows(mkdir("tRNA-mapping.dir"))
-@originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
-def trna_scan_load(outfile):
-    """ If already downloaded trna nuclear genome from http://gtrnadb.ucsc.edu/index.html """
-
-    tran_scan_path = PARAMS['trna_scan_path']
-    tmp_genome = P.get_temp_filename(".")
-
-    statement = """ cut -f1-9,16 %(trna_scan_path)s | sed 1,3d > %(tmp_genome)s && 
-    awk -F"\\t" '{ $10 = ($10 == "pseudo" ? $10 : "") } 1' OFS=, %(tmp_genome)s | sed 's/,/\\t/g' > %(outfile)s   
-    """
-
-    P.run(statement)
-    os.unlink(tmp_genome)
-  
-
-@active_if(not PARAMS['trna_scan_load'])
 @follows(mkdir("tRNA-mapping.dir"))
 @originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
 def trna_scan_nuc(outfile):
@@ -415,7 +397,11 @@ def trna_scan_nuc(outfile):
 
     genome = os.path.join(PARAMS['genome_dir'], PARAMS['genome'] + ".fa")
 
-    statement = "tRNAscan-SE -q %(genome)s 2> tRNA-mapping.dir/tRNAscan.nuc.log | sed 1,3d > %(outfile)s"
+    if PARAMS['trna_scan_load']:
+        tran_scan_path = PARAMS['trna_scan_path']
+        statement = "cp %(trna_scan_path)s %(output)s"
+    else:
+        statement = "tRNAscan-SE -q %(genome)s 2> tRNA-mapping.dir/tRNAscan.nuc.log | sed 1,3d > %(outfile)s"
 
 # Need to modify if working with non eukaryotic organisms in pipeline.yml- -E to -U
     job_memory = "50G"
