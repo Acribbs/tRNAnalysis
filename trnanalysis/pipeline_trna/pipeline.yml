@@ -25,6 +25,9 @@ gtf_location: /ifs/projects/proj051/Analysis_will_paper/tRNA/Homo_sapiens.GRCh38
 
 trna_scan_load: 0
 
+# path to file for tScan-SE output download
+trna_scan_path: /ifs/projects/adam/tRNA-analysis-test/hg38-tRNA-detailed.out
+
 ##########################################################
 # UCSC database options
 # This section controls the parameters required for

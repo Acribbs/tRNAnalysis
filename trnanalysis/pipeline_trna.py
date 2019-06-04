@@ -396,13 +396,10 @@ def genome_coverage(infiles, outfile):
 def trna_scan_load(outfile):
     """ If already downloaded trna nuclear genome from http://gtrnadb.ucsc.edu/index.html """
 
-    trna_folder = os.path.join(PARAMS['trna_scan_path'], PARAMS['trna_scan_folder'] + ".tar.gz")
-    genome = PARAMS['trna_scan_folder']
-    trna_file = "tRNA-mapping.dir/" + genome  + "-detailed.out"
+    tran_scan_path = PARAMS['trna_scan_path']
     tmp_genome = P.get_temp_filename(".")
 
-    statement = """ tar -xzf %(trna_folder)s -C tRNA-mapping.dir && 
-    cut -f1-9,16 %(trna_file)s | sed 1,3d > %(tmp_genome)s && 
+    statement = """ cut -f1-9,16 %(trna_scan_path)s | sed 1,3d > %(tmp_genome)s && 
     awk -F"\\t" '{ $10 = ($10 == "pseudo" ? $10 : "") } 1' OFS=, %(tmp_genome)s | sed 's/,/\\t/g' > %(outfile)s   
     """
 

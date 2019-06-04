@@ -17,10 +17,10 @@ Introduction
 
 This pipeline requires the following input:
 
- * a single end fastq file - if you have paired end data we recoment flashing the reads together
- to make a single file or only using the first read of your paired end data.
+ * a single end fastq file - if you have paired end data we recoment flashing the reads together to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
- * ensembl gtf: can be downloaded from
+ * ensembl gtf: can be downloaded from `ensembl downloader page <https://www.ensembl.org/info/data/ftp/index.html>`_
+
 
 **Optionally** to make the pipeline run faster you can also use a downloaded tRNAscan-SE output from the
 `GtRNAdb <http://gtrnadb.ucsc.edu>`_. If you access a genome in the database (eg `hg19 <http://gtrnadb.ucsc.edu/genomes/eukaryota/Hsapi19/>`_) then on the left hand panel you will see a tab "Download tRNAscan-SE Results".
@@ -41,6 +41,15 @@ and enter it. For example::
 
    mkdir version1
    cd version1/
+
+This is where the toy example pipeline will be executed and files will be generated in this
+directory.
+
+However, the tRNAnalysis example comes with test data and this can be downloaded by running::
+
+	wge https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
+	tar -zxvf test_trna.tar.gz
+	cd test_trna
 
 **Step 3**: Configure the cluster
 

@@ -18,8 +18,9 @@ Tutorial start
 
 **1.** First download the tutorial data::
 
-   	wget  https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
-	tar -zxvf test_trna.tar.gz
+   wget https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
+   tar -zxvf test_trna.tar.gz
+
 
 **2.** Next we will generate a configuration yml file so the pipeline output can be modified::
 
