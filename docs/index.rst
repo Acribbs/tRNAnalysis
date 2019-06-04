@@ -37,6 +37,7 @@ Indices and tables
    
    getting_started/Installation.rst
    getting_started/Cluster_config.rst
+   getting_started/Examples.rst
    getting_started/Tutorial.rst
    
 .. toctree::

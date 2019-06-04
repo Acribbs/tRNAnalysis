@@ -233,98 +233,6 @@ conda_install() {
 
 	DEV_RESULT=0
 
-	if [[ $INSTALL_DEVEL ]] || [[ $JENKINS_INSTALL ]] ; then
-
-	    # download the code out of jenkins
-	    if [[ -z ${JENKINS_INSTALL} ]] ; then
-
-		# make sure you are in the INSTALL_HOME folder
-		cd $INSTALL_HOME
-
-		if [[ $CODE_DOWNLOAD_TYPE -eq 0 ]] ; then
-		    # get the latest version from Git Hub in zip format
-		    curl -LOk https://github.com/Acribbs/tRNAnalysis/archive/$INSTALL_BRANCH.zip
-		    unzip $INSTALL_BRANCH.zip
-		    rm $INSTALL_BRANCH.zip
-		    if [[ ${RELEASE} ]] ; then
-			NEW_NAME=`echo $INSTALL_BRANCH | sed 's/^v//g'`
-			mv trnanalysis-$NEW_NAME/ trnanalysis/
-		    else
-			mv trnanalysis-$INSTALL_BRANCH/ trnanalysis/
-		    fi
-		elif [[ $CODE_DOWNLOAD_TYPE -eq 1 ]] ; then
-		    # get latest version from Git Hub with git clone
-		    git clone --branch=$INSTALL_BRANCH https://github.com/Acribbs/tRNAnalysis.git
-		elif [[ $CODE_DOWNLOAD_TYPE -eq 2 ]] ; then
-		    # get latest version from Git Hub with git clone
-		    git clone --branch=$INSTALL_BRANCH git@github.com:Acribbs/tRNAnalysis.git
-		else
-		    report_error " Unknown download type for trnanalysis code... "
-		fi
-
-		# make sure you are in the INSTALL_HOME/trnanalysis folder
-		cd $INSTALL_HOME/tRNAnalysis
-
-	    fi
-
-	    # Set up other environment variables
-	    setup_env_vars
-
-	    # Python preparation
-	    # remove install_requires (no longer required with conda package)
-	    sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
-	    sed -i'' -e '/# dependencies/,/dependency_links=dependency_links,/d' setup.py
-	    log "installing trnanalysis repo"
-	    python setup.py develop
-
-	    if [[ $? -ne 0 ]] ; then
-		echo
-		echo " There was a problem doing: 'python setup.py develop' "
-		echo " Installation did not finish properly. "
-		echo 
-		echo " Please submit this issue via Git Hub: "
-		echo " https://github.com/Acribbs/tRNAnalysis/issues "
-		echo
-
-		print_env_vars
-
-	    fi # if-$?
-
-	    # revert setup.py if downloaded with git
-	    [[ $CODE_DOWNLOAD_TYPE -ge 1 ]] && git checkout -- setup.py
-
-	    # environment pinning
-	    # python scripts/conda.py
-
-	fi # if INSTALL_DEVEL
-
-	# check whether conda create went fine
-	if [[ $DEV_RESULT -ne 0 ]] ; then
-	    echo
-	    echo " There was a problem installing the code with conda. "
-	    echo " Installation did not finish properly. "
-	    echo
-	    echo " Please submit this issue via Git Hub: "
-	    echo " https://github.com/Acribbs/tRNAnalysis/issues "
-	    echo
-
-	    print_env_vars
-
-	else
-	    clear
-	    echo 
-	    echo " The code was successfully installed!"
-	    echo
-	    echo " To activate the CGAT environment type: "
-	    echo " $ source $CONDA_INSTALL_DIR/etc/profile.d/conda.sh"
-	    echo " $ conda activate base"
-	    echo " $ conda activate $CONDA_INSTALL_ENV"
-	    echo
-	    echo " To deactivate the environment, use:"
-	    echo " $ conda deactivate"
-	    echo
-	fi # if-$ conda create
-
     fi # if travis install
 
 } # conda install
@@ -341,7 +249,7 @@ conda_test() {
     setup_env_vars
 
     # setup environment and run tests
-    if [[ $TRAVIS_INSTALL ]] || [[ $JENKINS_INSTALL ]] ; then
+    if [[ $TRAVIS_INSTALL ]]; then
 
 	# enable Conda env
 	log "activating trnanalysis conda environment"
@@ -368,48 +276,6 @@ conda_test() {
 	    nosetests -v tests/test_style.py ;
 	fi
 
-    else
-
-	source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
-	RET=$( (conda list | grep trnanalysis) || true )
-
-	if [[ -z "${RET}" ]] ; then
-	    # this is "cgat-devel" so tests can be run
-
-	    # make sure you are in the INSTALL_HOME/trnanalysis folder
-	    cd $INSTALL_HOME/trnanalysis
-
-	    # remove install_requires (no longer required with conda package)
-	    sed -i'' -e '/REPO_REQUIREMENT/,/pass/d' setup.py
-	    sed -i'' -e '/# dependencies/,/dependency_links=dependency_links,/d' setup.py
-	    python setup.py develop
-	    OUTPUT_DIR=`pwd`
-
-	    # run tests
-	    log "running tests..."
-	    pytest tests >& tests.output
-	    if [[ $? -eq 0 ]] ; then
-		echo
-		echo " tests passed successfully! "
-		echo
-	    else
-		echo
-		echo " tests failed. Please see $OUTPUT_DIR/tests.output file for detailed output. "
-		echo
-
-		print_env_vars
-
-	    fi
-	    
-	else
-	    # in this case a production installation was found so no need to run tests
-	    echo
-	    echo " You installed the production release, which has been properly tested before. "
-	    echo " No need to test. Exiting now... "
-	    echo
-
-	    exit 0
-	fi
 
     fi # if travis or jenkins
 
@@ -445,7 +311,7 @@ conda_update() {
 } # conda_update
 
 
-# unistall CGAT code collection
+# unistall trnanalysis
 uninstall() {
 
     detect_trnanalysis_installation
@@ -614,10 +480,6 @@ fi
 
 # travis execution
 TRAVIS_INSTALL=
-# jenkins testing
-JENKINS_INSTALL=
-# conda installation type
-INSTALL_DEVEL=
 # test current installation
 INSTALL_TEST=
 # update current installation
@@ -658,11 +520,6 @@ do
 
 	--travis)
 	    TRAVIS_INSTALL=1
-	    shift # past argument
-	    ;;
-
-	--jenkins)
-	    JENKINS_INSTALL=1
 	    shift # past argument
 	    ;;
 
@@ -728,8 +585,7 @@ done
 # sanity check 2: make sure one installation option is selected
 if [[ -z $INSTALL_TEST ]] && \
        [[ -z $INSTALL_DEVEL ]] && \
-       [[ -z $TRAVIS_INSTALL ]] && \
-       [[ -z $JENKINS_INSTALL ]] ; then
+       [[ -z $TRAVIS_INSTALL ]] ; then
 
     report_error " You need to select either --devel or --production. "
 
@@ -742,7 +598,7 @@ fi
     report_error " Not enough disk space available on the installation folder: "$INSTALL_HOME
 
 # perform actions according to the input parameters processed
-if [[ $TRAVIS_INSTALL ]] || [[ $JENKINS_INSTALL  ]] ; then
+if [[ $TRAVIS_INSTALL ]]; then
 
     conda_install
     conda_test

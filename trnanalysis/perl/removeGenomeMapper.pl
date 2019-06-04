@@ -1,3 +1,9 @@
+# This script is taken from AnneHoffmann from the following
+# repo: https://github.com/AnneHoffmann/tRNA-read-mapping
+# In the future for consistency purposes, this script will
+# be converted to python
+
+
 #!/usr/bin/env perl
 
 use strict;
