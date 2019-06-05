@@ -21,6 +21,7 @@ library("ggpubr")
 library("knitr")
 library("fastqcr")
 library(DT)
+library(RColorBrewer)
 ```
 
 Report generated based on data located in `r getwd()` \  
@@ -179,7 +180,7 @@ for(i in 1:num_samples){
   feature_count_tibble$Percentages <- 100*(feature_count_tibble$NumberMapped / total_mapped)
   feature_count_tibble_all_samples = bind_rows(feature_count_tibble_all_samples,feature_count_tibble)
 }
-fc_tibble_all_samples_nonzero <- dplyr::filter(feature_count_tibble_all_samples, NumberMapped != 0)
+fc_tibble_all_samples_nonzero <- dplyr::filter(feature_count_tibble_all_samples, NumberMapped >= 150)
 fc_tibble_all_samples_nonzero<- fc_tibble_all_samples_nonzero[,c(3,1,2,4)]
 
 qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
@@ -190,7 +191,14 @@ feature_count_plot <- ggplot(data=fc_tibble_all_samples_nonzero, aes(x=Sample, y
 
 feature_count_plot_percent <- ggplot(data=fc_tibble_all_samples_nonzero, aes(x=Sample, y=Percentages, fill=`GeneID`)) +
   geom_bar(stat="identity") + coord_flip() + scale_fill_manual(values=col_vector)
-  
+
+postscript("feature_count_pct.eps")
+feature_count_plot_percent
+dev.off()
+
+postscript("feature_count.eps")
+feature_count_plot
+dev.off()
 ```
 
 ### Number
@@ -238,133 +246,3 @@ print(feature_count_plot)
 print(feature_count_plot_percent)
 ```
 
-`r datatable(fc_tibble_final)`
-
-
-# Fast QC 
-FastQC is used to perfrom quality control checks on raw high throughput sequencing data. 
-
-``` {r, fast_QC, include = FALSE}
-
-## Fill data frames using fastqcr module and rbind samples together
-mean_quality_scores <- NULL
-per_sequence_qs <- NULL
-per_sequence_gc <- NULL
-per_base_n_content <- NULL
-sequence_duplication_levels <- NULL
-sequence_duplication_levels <- NULL
-overrepresented_sequences <- NULL
-adapter_content <- NULL
-file_paths = list.files(path = "../", pattern='fastqc.zip$', recursive=TRUE, full.names = TRUE)
-for(i in 1:length(file_paths)){
-  sample_name <- sub(".*fastqc_pre.dir/(.*)?_fastqc\\.zip", "\\1", file_paths[i])
-  qc_sample <-qc_read(file= file_paths[i], modules = "all")
-  # K mer content and total deduplicated percentage removed and sample name added
-  qc_sample <- Map(cbind, qc_sample[1:12], Sample = sample_name)
-
-  mean_quality_scores <- rbind(mean_quality_scores, qc_sample[[3]])
-  per_sequence_qs <- rbind(per_sequence_qs, qc_sample[[5]] )
-  per_sequence_gc <- rbind(per_sequence_gc,qc_sample[[7]])
-  per_base_n_content <- rbind(per_base_n_content, qc_sample[[8]])
-  sequence_duplication_levels <- rbind(sequence_duplication_levels, qc_sample[[10]])
-  adapter_content <- rbind(adapter_content, qc_sample[[12]])
-  
-  overrepresented_sequences_subset <- tibble(group = c("Top over-represented sequence", "Sum of remaining over-represented sequences"), Percentages = c(qc_sample[[11]]$Percentage[1], sum(qc_sample[[11]]$Percentage) - qc_sample[[11]]$Percentage[1]), Sample = sample_name )
-  overrepresented_sequences <- rbind(overrepresented_sequences, overrepresented_sequences_subset)
-}
-```
-
-```{r, initialise_FQ_plots, include = FALSE}
-## Initialise plots (to be printed individually)
-mean_q_scores_plot <- ggplot(data=mean_quality_scores, aes(x=Base, y=Mean, color=Sample)) +
-  geom_line(stat="identity") + labs(x = "Position (bp)", y= "Mean phred score") + expand_limits(y=0) +
-  theme_bw() 
-mean_q_scores_plot <- set_palette(mean_q_scores_plot, "lancet")
-
-per_sequence_qs_plot <- ggplot(data=per_sequence_qs, aes(x=Quality, y=Count, color=Sample)) +
-  geom_line(stat="identity") + labs(x = "Mean Sequence Quality (Phred Score)", y= "Count") + expand_limits(y=0) + theme_bw() 
-per_sequence_qs_plot <- set_palette(per_sequence_qs_plot, "lancet")
-
-per_sequence_gc_plot <- ggplot(data=per_sequence_gc, aes(x=`GC Content`, y=Count, color=Sample)) +
-  geom_line(stat="identity") + labs(x = "% GC Content", y= "Count") + theme_bw()   
-per_sequence_gc_plot <- set_palette(per_sequence_gc_plot, "lancet")
-
-per_base_n_content_plot <- ggplot(data=per_base_n_content, aes(x=Base, y=`N-Count`, color=Sample)) +
-  geom_line(stat="identity") + labs(x = "Position in read (bp)", y= "Percentage N-Count") + theme_bw()
-per_base_n_content_plot <- set_palette(per_base_n_content_plot, "lancet")
-
-
-overrepresented_sequences_plot <- ggplot(data=overrepresented_sequences, aes(x=Sample, y=Percentages, fill=group)) +
-  geom_bar(stat="identity") + labs(y = "Percentage of total sequences") + coord_flip() + fill_palette("lancet") + theme_bw() + ylim(0,100) + theme(legend.position="bottom") + labs(fill = "")
-
-## 
-sequence_duplication_levels$`Duplication Level` <- factor(sequence_duplication_levels$`Duplication Level`, as.character(sequence_duplication_levels$`Duplication Level`[1:16]))
-
-sequence_duplication_levels_plot <- ggplot(data=sequence_duplication_levels, aes(x=`Duplication Level`, y=`Percentage of total`, color = Sample, group =1)) + geom_line(stat="identity") + labs(x = "Sequence Duplication Level", y= "Percentage of Library") +ylim(0,100) +theme_bw()
-sequence_duplication_levels_plot <- set_palette(sequence_duplication_levels_plot, "lancet") 
-
-# Adapter content
-# Cumulative
-adapter_content_cumulative <- adapter_content
-adapter_content_cumulative$total_adapter <- rowSums(adapter_content_cumulative[,2:6] )
-adapter_content_cumulative <- adapter_content_cumulative %>% select(-contains(" Adapter"), -contains("Nextera"))
-adapter_content_cumulative_plot <- ggplot(data= adapter_content_cumulative, aes(x= Position, y= total_adapter, color = Sample)) + geom_line() + theme_bw() + labs(x = "Position (bp)", y = "Percentage of Sequences")
-adapter_content_cumulative_plot <- set_palette(adapter_content_cumulative_plot, "lancet")
-
-# Each adapter type individually
-adapter_content <- gather(adapter_content, "Adapter", "Percentage_of_sequences", 2:6)
-adapter_content_plot <- ggplot(data= adapter_content, aes(x= Position, y= Percentage_of_sequences, color = Sample, fill = Sample, shape = Adapter, 
-  group=interaction(Sample, Adapter))) + 
-  geom_point() + geom_line() + theme_bw() + labs(x = "Position (bp)", y = "Percentage of Sequences")
-adapter_content_plot <- set_palette(adapter_content_plot, "lancet")
-```
-
-## Mean quality scores
-The mean quality value across each base position in the read.
-```{r, QC_mean_plot, echo = FALSE}
-print(mean_q_scores_plot)
-```
-
-## Per sequence quality scores
-The number of reads with average quality scores. Shows if a subset of reads has poor quality
-```{r, per_sequence_qs_plot, echo=FALSE}
-print(per_sequence_qs_plot)
-```
-
-## Per sequence GC content
-The average GC content of reads. Normal random library typically have a roughly normal distribution of GC content.
-```{r, per_sequence_gc_plot, echo=FALSE}
-print(per_sequence_gc_plot)
-```
-
-## Per base N content
-If a sequencer is unable to make a base call with sufficient confidence then it will normally substitute an N rather than a conventional base. This plot shows the percentage of base calls at each position for which an N was called. The documentation states that you get a warning if the number of Ns is above 5%. 
-```{r, per_base_n_count, echo=FALSE}
-print(per_base_n_content_plot)
-```
-
-## Sequence Duplicaton Levels
-The relative level of duplication found for every sequence.
-```{r, sequence_duplication_levels_plot, echo=FALSE}
-print(sequence_duplication_levels_plot)
-```
-
-## Overrepresented Sequences
-The total amount of overrepresented sequences found in each library
-```{r, overrepresented_sequences_plot, echo = FALSE}
-print(overrepresented_sequences_plot)
-```
-
-## Adapter content {.tabset .tabset-pills}
-
-### Specific adapter content 
-The percentage count of the proportion of your library which has seen individual types of adaptor sequences at each position. 
-```{r, adapter_content_plot, echo = FALSE}
-print(adapter_content_plot)
-```
-
-### Adapter content cumulative
-The cumulative percentage count of the proportion of your library which has seen each of the adapter sequences at each position. 
-```{r, adapter_content_plot_cumsum, echo = FALSE}
-print(adapter_content_cumulative_plot)
-```
