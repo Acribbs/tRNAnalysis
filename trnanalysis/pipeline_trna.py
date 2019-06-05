@@ -560,6 +560,22 @@ def mature_trna_cluster(infile, outfile):
 
 @transform(mature_trna_cluster,
            regex("tRNA-mapping.dir/(\S+).fa"),
+           r"tRNA-mapping.dir/\1_fragment.bed")
+def create_fragment_bed(infile, outfile):
+    """Take the clusterInfo and create a bed file containing all of the fragments of tRNAs"""
+
+    cluster_info = outfile.replace("_cluster.fa","_clusterInfo.fa")
+
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
+
+    statement = """python %(PY_SRC_PATH)s/trna_fragment_bed.py -I %(cluster_info)s -S %(outfile)s"""
+
+    P.run(statement)
+
+
+@transform(mature_trna_cluster,
+           regex("tRNA-mapping.dir/(\S+).fa"),
            r"tRNA-mapping.dir/\1.1.ebwt")
 def index_trna_cluster(infile, outfile):
     """index tRNA clusters"""
@@ -672,6 +688,20 @@ def post_mapping_cluster(infiles, outfile):
                    samtools index %(outfile)s"""
 
     job_memory = "40G"
+    P.run(statement)
+
+
+@transform(post_mapping_cluster,
+           regex("post_mapping_bams.dir/(\S+)_trna.bam"),
+           add_inputs(create_fragment_bed),
+           r"tRNA-mapping.dir/\1_fragment_coverage.bed")
+def fragment_coverage(infiles, outfile):
+    """Generate coverage over the full bed file for each bam file"""
+
+    bamfile, bedfile = infiles
+
+    statement = """bedtools coverage -f 1 -a %(bedfile)s -b %(bamfile)s > %(outfile)s"""
+
     P.run(statement)
 
 
@@ -878,7 +908,7 @@ def coverage_plot(infile, outfile):
 @follows(strand_specificity, count_reads, count_features, build_bam_stats,
          full_genome_idxstats, build_samtools_stats, genome_coverage,
          bowtie_index_artificial, index_trna_cluster, remove_reads,
-         keep_mature_trna, merge_idx_stats, create_coverage, filter_vcf, merge_features, profile_trna, trna_calculate_end)
+         keep_mature_trna, merge_idx_stats, create_coverage, filter_vcf, merge_features, profile_trna, trna_calculate_end, fragment_coverage)
 def full():
     pass
 

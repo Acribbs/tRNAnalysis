@@ -12,14 +12,13 @@ Current tRNA fragment features supported:
 * tRH-DTA - 17-54
 * tRH-AT - 38-69
 * tRH-3' - 43-73
-
 * tRF-5' - 1-15
 * tRF-3' - 58-73
 
 
 Usage
 -----
-
+python /ifs/devel/adamc/tRNAnalysis/trnanalysis/python/trna_fragment_bed.py -I hg38_clusterInfo.fa -S test.bed
 
 Options
 -------
@@ -75,37 +74,56 @@ def main(argv=None):
 
     E.info(options.stdin)
 
+    outfile = IOTools.open_file(options.stdout.name, "w")
+    trna_options = ["tRH-5'","tRH-DA","tRH-DTA","tRH-AT","tRH-3'","tRF-5'", "tRF-3'"]
+    for trna in trna_options:
+        infile = IOTools.open_file(options.stdin.name)
+        iterator = FastaIterator.FastaIterator(infile)
 
-    infile = IOTools.open_file(options.stdin.name)
-    iterator = FastaIterator.FastaIterator(infile)
-
-    outfile_info = IOTools.open_file(options.stdout.name, "w")
-
-    d = collections.OrderedDict()
-    cluster_dict = dict()
-
-    # first iterate over the fasta file
-    for cur_record in iterator:
         
-        title = cur_record.title
-        m = re.match("(cluster\d+):chr\S+.tRNA\d+-(\S+)-\((\S+)\)", title)
 
-        cluster = m.group(1)
-        print(cluster)
-        trna = m.group(2)
-        strand = m.group(3)
+        d = collections.OrderedDict()
+        cluster_dict = dict()
 
-        chrom = cluster + ":" + trna + "-"
-        score = "."
+        # first iterate over the fasta file
+    
+        for cur_record in iterator:
+            
+            title = cur_record.title
+            m = re.match("(cluster\d+):chr\S+.tRNA\d+-(\S+)-\((\S+)\)", title)
 
-        if options.trna_scheme == "tDR-5'":
-            start = "1"
-            end = "33"
-        else:
-            start = ""
-            end = ""
+            cluster = m.group(1)
+            trna_group = m.group(2)
+            strand = m.group(3)
 
-        options.stdout.write(("%s\t%s\t%s\t%s\t%s\t%s\n")%(chrom, start, end, options.trna_scheme, score, strand))
+            chrom = cluster + ":" + trna_group + "-"
+            score = "."
+            print(trna)
+            if trna == "tRH-5'":
+                start = "1"
+                end = "33"
+            elif trna == "tRH-DA":
+                start = "14"
+                end = "43"
+            elif trna == "tRH-DTA":
+                start = "17"
+                end = "54"
+            elif trna == "tRH-AT":
+                start = "38"
+                end = "69"
+            elif trna == "tRH-3'":
+                start = "43"
+                end = "73"
+            elif trna == "tRF-5'":
+                start = "1"
+                end = "15"
+            elif trna == "tRF-3'":
+                start = "58"
+                end = "73"
+            else:
+                start = ""
+                end = ""
+            outfile.write(("%s\t%s\t%s\t%s\t%s\t%s\n")%(chrom, start, end, trna, score, strand))
 
 
     E.stop()
