@@ -60,6 +60,11 @@ def main(argv=None):
        
         column = line.split()
 
+        # for any column in bed that is 0 then the script would generate a negative start
+        # this avoids this:
+        if column[1] == "0":
+            column[1] = "50"
+
         new_columns = [column[0], str(int(column[1])-50), str(int(column[2]) +50), column[3], column[4], column[5], str(int(column[1])-50), str(int(column[2]) +50), column[8], column[9]]
 
         if "pseudo" not in column[3]:

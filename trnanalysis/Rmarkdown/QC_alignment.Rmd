@@ -124,6 +124,7 @@ plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
   theme(axis.text.x = element_text(angle=90, hjust=1))  + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
 ggplotly(plot)
 ```
 
@@ -204,5 +205,142 @@ plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
   theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
 ggplotly(plot)
+```
+
+# Total tRNA fragments
+
+```{r}
+file_paths = list.files(path= "../tRNA-mapping.dir",pattern='_coverage.bed$', recursive=TRUE, full.names = TRUE)
+num_samples <- length(file_paths)
+feature_count_tibble = data.frame(matrix(ncol = 0, nrow=7))
+
+
+for(i in 1:num_samples){
+  sample_name <- sub("../tRNA-mapping.dir/(.*)?_fragment_coverage.bed", "\\1", file_paths[i])
+  
+  data <- read.table(file_paths[i])
+  data_1 <- data %>%  dplyr::group_by(V4)
+  data_1 %>%  summarise_at("V7",sum) %>%  rename(fragment = V4, Count = V7) -> data_1
+  
+  total_reads = sum(data_1$Count)
+
+  data_1 %>%  mutate(Sample = as.character(sample_name)) -> data_1
+  
+  data_1$Percentages <- 100*( data_1$Count / total_reads)
+  
+  feature_count_tibble = rbind(feature_count_tibble, data_1)
+
+  }
+
+
+
+
+
+qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
+col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
+
+plot <- ggplot(feature_count_tibble, aes(x = Sample, y = Percentages, fill = fragment)) +
+
+       geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplotly(plot)
+
+```
+
+# tRNA halves analysis
+
+```{r}
+file_paths = list.files(path= "../tRNA-mapping.dir",pattern='_coverage.bed$', recursive=TRUE, full.names = TRUE)
+num_samples <- length(file_paths)
+feature_count_tibble = data.frame(matrix(ncol = 0, nrow=7))
+
+
+for(i in 1:num_samples){
+  sample_name <- sub("../tRNA-mapping.dir/(.*)?_fragment_coverage.bed", "\\1", file_paths[i])
+  
+  data <- read.table(file_paths[i])
+  data_1 <- data %>%  dplyr::group_by(V4)
+  data_1 %>%  summarise_at("V7",sum) %>%  rename(fragment = V4, Count = V7) -> data_1
+  data_1 <- data_1[!data_1$fragment == "tRF-3'",]
+  data_1 <- data_1[!data_1$fragment == "tRF-5'",]
+  data_1 <- data_1[!data_1$fragment == "tRF-A",]
+  data_1 <- data_1[!data_1$fragment == "tRF-AT",]
+  data_1 <- data_1[!data_1$fragment == "tRF-T",]
+  data_1 <- data_1[!data_1$fragment == "tRF-DA",]
+  data_1 <- data_1[!data_1$fragment == "tRF-D",]
+  
+  total_reads = sum(data_1$Count)
+
+  data_1 %>%  mutate(Sample = as.character(sample_name)) -> data_1
+  
+  data_1$Percentages <- 100*( data_1$Count / total_reads)
+  
+  feature_count_tibble = rbind(feature_count_tibble, data_1)
+
+  }
+
+
+
+
+
+qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
+col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
+
+plot <- ggplot(feature_count_tibble, aes(x = Sample, y = Percentages, fill = fragment)) +
+
+       geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplotly(plot)
+
+```
+
+# tRNA fragment analysis
+
+```{r}
+file_paths = list.files(path= "../tRNA-mapping.dir",pattern='_coverage.bed$', recursive=TRUE, full.names = TRUE)
+num_samples <- length(file_paths)
+feature_count_tibble = data.frame(matrix(ncol = 0, nrow=7))
+
+
+for(i in 1:num_samples){
+  sample_name <- sub("../tRNA-mapping.dir/(.*)?_fragment_coverage.bed", "\\1", file_paths[i])
+  
+  data <- read.table(file_paths[i])
+  data_1 <- data %>%  dplyr::group_by(V4)
+  data_1 %>%  summarise_at("V7",sum) %>%  rename(fragment = V4, Count = V7) -> data_1
+  data_1 <- data_1[!data_1$fragment == "tRH-3'",]
+  data_1 <- data_1[!data_1$fragment == "tRH-DA",]
+  data_1 <- data_1[!data_1$fragment == "tRH-DTA",]
+  data_1 <- data_1[!data_1$fragment == "tRH-AT",]
+  data_1 <- data_1[!data_1$fragment == "tRH-5'",]
+  
+  total_reads = sum(data_1$Count)
+
+  data_1 %>%  mutate(Sample = as.character(sample_name)) -> data_1
+  
+  data_1$Percentages <- 100*( data_1$Count / total_reads)
+  
+  feature_count_tibble = rbind(feature_count_tibble, data_1)
+
+  }
+
+
+
+
+
+qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
+col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
+
+plot <- ggplot(feature_count_tibble, aes(x = Sample, y = Percentages, fill = fragment)) +
+
+       geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplotly(plot)
+
 ```
