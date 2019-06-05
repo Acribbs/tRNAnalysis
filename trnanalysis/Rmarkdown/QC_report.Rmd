@@ -182,11 +182,14 @@ for(i in 1:num_samples){
 fc_tibble_all_samples_nonzero <- dplyr::filter(feature_count_tibble_all_samples, NumberMapped != 0)
 fc_tibble_all_samples_nonzero<- fc_tibble_all_samples_nonzero[,c(3,1,2,4)]
 
+qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
+col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
+
 feature_count_plot <- ggplot(data=fc_tibble_all_samples_nonzero, aes(x=Sample, y=NumberMapped, fill=`GeneID`)) +
-  geom_bar(stat="identity") + coord_flip() + fill_palette("lancet")
+  geom_bar(stat="identity") + coord_flip() + scale_fill_manual(values=col_vector)
 
 feature_count_plot_percent <- ggplot(data=fc_tibble_all_samples_nonzero, aes(x=Sample, y=Percentages, fill=`GeneID`)) +
-  geom_bar(stat="identity") + coord_flip() + fill_palette("lancet")
+  geom_bar(stat="identity") + coord_flip() + scale_fill_manual(values=col_vector)
   
 ```
 
@@ -215,10 +218,10 @@ fc_tibble$Percentages <- 100*(fc_tibble$Number/fc_tibble$Total)
 fc_tibble <- fc_tibble[fc_tibble$Number != 0,]
 
 feature_count_plot <- ggplot(data=fc_tibble, aes(x=Sample, y=Number, fill=`Status`)) +
-  geom_bar(stat="identity") + coord_flip() + fill_palette("lancet")
+  geom_bar(stat="identity") + coord_flip() + scale_fill_manual(values=col_vector)
 
 feature_count_plot_percent <- ggplot(data=fc_tibble, aes(x=Sample, y=Percentages, fill=`Status`)) +
-  geom_bar(stat="identity") + coord_flip() + fill_palette("lancet")
+  geom_bar(stat="identity") + coord_flip() + scale_fill_manual(values=col_vector)
   
 fc_tibble_final <- fc_tibble[, !names(fc_tibble) %in% c("Total")]
 ```
