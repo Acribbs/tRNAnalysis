@@ -564,11 +564,12 @@ def mature_trna_cluster(infile, outfile):
 def create_fragment_bed(infile, outfile):
     """Take the clusterInfo and create a bed file containing all of the fragments of tRNAs"""
 
-    cluster_info = outfile.replace("_cluster.fa","_clusterInfo.fa")
+    cluster_info = infile.replace("_cluster.fa","_clusterInfo.fa")
 
     PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                            "python"))
 
+    print(cluster_info)
     statement = """python %(PY_SRC_PATH)s/trna_fragment_bed.py -I %(cluster_info)s -S %(outfile)s"""
 
     P.run(statement)
@@ -925,6 +926,7 @@ def run_multiqc(outfile):
 
 
 @follows(mkdir("Report.dir"))
+@follows(run_multiqc)
 @originate("Report.dir/Final_report/QC_report.html")
 def run_rmarkdown(outfile):
 
