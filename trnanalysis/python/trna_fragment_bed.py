@@ -6,14 +6,21 @@ Purpose
 The aim of this script is to take a fasta file of clustered tRNAs and then output a
 bed file of different tRNA fragments depending on the options given.
 
-Current tRNA fragment features supported:
+Current tRNA half features supported:
 * tRH-5' - 1-33
 * tRH-DA - 14-43
 * tRH-DTA - 17-54
 * tRH-AT - 38-69
 * tRH-3' - 43-73
+
+Current tRNA fragment features supported:
 * tRF-5' - 1-15
 * tRF-3' - 58-73
+* tRF-D - 8-23
+* tRF-DA - 20-35
+* tRF-A - 27-42
+* tRF-AT - 33-53
+* tRF-T - 45-71
 
 
 Usage
@@ -75,7 +82,7 @@ def main(argv=None):
     E.info(options.stdin)
 
     outfile = IOTools.open_file(options.stdout.name, "w")
-    trna_options = ["tRH-5'","tRH-DA","tRH-DTA","tRH-AT","tRH-3'","tRF-5'", "tRF-3'"]
+    trna_options = ["tRH-5'","tRH-DA","tRH-DTA","tRH-AT","tRH-3'","tRF-5'", "tRF-3'", "tRF-D", "tRF-DA", "tRF-A", "tRF-AT", "tRF-T"]
     for trna in trna_options:
         infile = IOTools.open_file(options.stdin.name)
         iterator = FastaIterator.FastaIterator(infile)
@@ -120,9 +127,24 @@ def main(argv=None):
             elif trna == "tRF-3'":
                 start = "58"
                 end = "73"
+            elif trna == "tRF-D":
+                start = "8"
+                end = "23"
+            elif trna == "tRF-DA":
+                start = "20"
+                end = "35"
+            elif trna == "tRF-A":
+                start = "27"
+                end = "42"
+            elif trna == "tRF-AT":
+                start = "33"
+                end = "53"
+            elif trna == "tRF-T":
+                start = "45"
+                end = "71"
             else:
-                start = ""
-                end = ""
+                print("tRNA fragment not implemented")
+                break
             outfile.write(("%s\t%s\t%s\t%s\t%s\t%s\n")%(chrom, start, end, trna, score, strand))
 
 
