@@ -78,6 +78,7 @@ setup(
     platforms=["any"],
     keywords="computational genomics",
     long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[_f for _f in classifiers.split("\n") if _f],
     url="https://github.com/",
     # package contents
