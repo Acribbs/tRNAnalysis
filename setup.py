@@ -11,7 +11,7 @@ if LooseVersion(setuptools.__version__) < LooseVersion('1.1'):
         "the tRNA software requires setuptools 1.1 higher")
 
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 ########################################################################
