@@ -368,7 +368,6 @@ def build_samtools_stats(infile, outfile):
 
     P.run(statement)
 
-
 @transform(map_with_bowtie,
            regex("mapping.dir/(\S+).bam"),
            add_inputs(os.path.join(PARAMS["bowtie_genome_dir"],
@@ -379,6 +378,8 @@ def genome_coverage(infiles, outfile):
        samples """
 
     infile, genome = infiles
+
+    job_memory = PARAMS['genomecov_memory']
 
     statement = """bedtools genomecov -ibam %(infile)s -g %(genome)s > %(outfile)s"""
 
@@ -399,7 +400,7 @@ def trna_scan_nuc(outfile):
 
     if PARAMS['trna_scan_load']:
         tran_scan_path = PARAMS['trna_scan_path']
-        statement = "cp %(trna_scan_path)s %(output)s"
+        statement = "cp %(trna_scan_path)s %(outfile)s"
     else:
         statement = "tRNAscan-SE -q %(genome)s 2> tRNA-mapping.dir/tRNAscan.nuc.log | sed 1,3d > %(outfile)s"
 
@@ -934,6 +935,7 @@ def run_rmarkdown(outfile):
                                           "Rmarkdown"))
 
     cwd = os.getcwd()
+    job_memory = "5G"
     # Needs to be re-written so that the whole report is now rendered
     statement = '''cp %(RMD_SRC_PATH)s/* Report.dir/ &&
                    cd Report.dir && 
