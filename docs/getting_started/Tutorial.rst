@@ -10,7 +10,7 @@ Before beginning this tutorial make sure you have tRNAnalysis installed correctl
 please see here (see :ref:`getting_started-Installation`) for installation instructions.
 
 In the following section we will run a toy example pipeline that demonstrates the functionality
-of tRNAnalysis. tRNAnalysis can be ran locally or dirtributed accross a cluster. 
+of tRNAnalysis. tRNAnalysis can be run locally or distributed across a cluster. 
 This tutorial will explain the steps required to run tRNAnalysis.
 
 Tutorial start
@@ -36,7 +36,7 @@ change the output of the pipeline.
 
    There is already a pipeline.yml file within the test data so you dont really need to run the command above this time.
 
-**3.** Next we will run the pipleine::
+**3.** Next we will run the pipeline::
 
    trnanalysis trna make full -v5 --no-cluster
 
