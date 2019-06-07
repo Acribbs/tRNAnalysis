@@ -28,9 +28,9 @@ Temporarily, we have also hosted a linux version only on anaconda which can down
 
 Pip installation
 ----------------
-We recommend installation through conda because it manages the dependancies. Despite this, tRNAnalysis
+We recommend installation through conda because it manages the dependencies. Despite this, tRNAnalysis
 can also be installed easily using the pip package manager. However, you will also have to
-install other dependancies manually::
+install other dependencies manually::
 
 	pip install trnanalysis
 
