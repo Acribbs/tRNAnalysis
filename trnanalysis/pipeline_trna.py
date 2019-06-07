@@ -426,12 +426,14 @@ def trna_scan_mito(infile, outfile):
 
 # For python script
 
+    PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           "python"))
     statement = """
                 cat %(genome)s | perl -lane 'BEGIN{$c=0;}if(m/^>chrM$/){$c=1}elsif(m/^>/){$c=0;}print if $c' > %(tmp_genome)s &&
                 tRNAscan-SE -q -O  %(tmp_genome)s |sed 1,3d > tRNA-mapping.dir/tRNAscan.chrM.csv &&
                 grep -v chrM %(infile)s  > tRNA-mapping.dir/tRNAscan.nuc_mod.csv &&
                 cat tRNA-mapping.dir/tRNAscan.nuc_mod.csv tRNA-mapping.dir/tRNAscan.chrM.csv > tRNA-mapping.dir/tRNAscan.csv &&
-                python %(cribbslab)s/python/tRNAscan2bed12.py -I tRNA-mapping.dir/tRNAscan.csv -S %(outfile)s
+                python %(PY_SRC_PATH)s/tRNAscan2bed12.py -I tRNA-mapping.dir/tRNAscan.csv -S %(outfile)s
                 """
 #  --info-file-out=%(trna_bed_info)s
     # add conversion for csv to bed file
