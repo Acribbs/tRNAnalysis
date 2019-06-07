@@ -170,7 +170,7 @@ def map_with_bowtie(infiles, outfile):
     fastq, genome = infiles
     tmp_fastq = P.get_temp_filename(".")
     temp_file = P.get_temp_filename(".")
-    #genome = genome.replace(".fa", "")
+    genome = genome.replace(".fa", "")
 
     statement = """gzip -dc %(fastq)s > %(tmp_fastq)s && bowtie -k 10 -v 2 --best --strata --sam  %(genome)s  %(tmp_fastq)s 2> %(outfile)s_bowtie.log | samtools view -bS |
                    samtools sort -T %(temp_file)s -o %(outfile)s &&
@@ -441,7 +441,7 @@ def trna_scan_mito(infile, outfile):
 
 @transform(os.path.join(PARAMS["genome_dir"],
                             PARAMS["genome"] + ".fa"),
-           regex("\S+/([\w_]+[\d_]+).fa"),
+           regex("\S+/(\S+).fa"),
            add_inputs(trna_scan_mito),
            r"tRNA-mapping.dir/\1_masked.fa")
 def mask_trna_genomic(infiles, outfile):
@@ -515,7 +515,7 @@ def bowtie_index_artificial(infile, outfile):
 
 @transform(os.path.join(PARAMS["genome_dir"],
                             PARAMS["genome"] + ".fa"),
-           regex("\S+/([\w_]+[\d_]+).fa"),
+           regex("\S+/(\S+).fa"),
            add_inputs(trna_scan_mito),
            r"tRNA-mapping.dir/\1.fa")
 def create_mature_trna(infiles,outfile):
@@ -719,7 +719,7 @@ def profile_trna(infiles, outfile):
     tmpfile = P.get_temp_file(".")
     tmpfile_name = tmpfile.name
 
-    statement = """cat %(bedfile)s |
+    statement = """sleep 20 && cat %(bedfile)s |
                    cgat bed2gff --as-gtf > %(tmpfile_name)s &&
                    cgat bam2geneprofile 
                    --output-filename-pattern="%(outfile)s.%%s"

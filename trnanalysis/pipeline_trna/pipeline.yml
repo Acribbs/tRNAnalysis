@@ -21,12 +21,29 @@ copyright: Cribbs Group, Botnar Research Centre (2018)
 ##########################################################
 
 # Full diectory of the gtf
-gtf_location: /ifs/projects/proj051/Analysis_will_paper/tRNA/Homo_sapiens.GRCh38.92.gtf.gz
+gtf_location: /ifs/projects/adam/tRNA-analysis-test/geneset_all.gtf.gz
 
+
+##########################################################
+# Location of output for tScan-SE
+# If you would like to speed the analysis of your data
+# then you can use pre-ran outputs, for hg38 and mm10 these
+# can be downloaded from /ifs/public/adam/data_trnanalysis/hg38|mm10_tRNAscan.nuc.csv
+
+# Specify if a pre-ran tScan-SE is present:
 trna_scan_load: 0
 
-# path to file for tScan-SE output download
-trna_scan_path: /ifs/projects/adam/tRNA-analysis-test/hg38-tRNA-detailed.out
+# full path to file for tScan-SE output download
+trna_scan_path: /ifs/projects/adam/tRNA-analysis/tRNAscan.nuc.csv
+ 
+###############################
+# Genomecoverage for each file
+# For large files the genomecoverage function may give a memory error
+# In this case the memory for this job can be increased here
+# This is the memory for each job (i.e. per file) not in total for all jobs
+###############################
+
+genomecov_memory: "20G"
 
 ##########################################################
 # UCSC database options
@@ -42,7 +59,7 @@ ucsc:
     user: genome
 
 # UCSC database name
-    database: hg38
+    database: mm10
 
 # repeats to collect as ',' separated list
     repeattypes: DNA,LINE,SINE,LTR,Transposon
@@ -93,7 +110,7 @@ trimmomatic:
 ########################################################
 
 # The name of the genome (single word with no "_" or "-" and including a number, without the .fa. e.g. hg19, genome1)
-genome: hg38
+genome: mm10
 
 # The folder that the genome is located in
 genome_dir: /ifs/mirror/genomes/index/
@@ -104,7 +121,7 @@ genome_dir: /ifs/mirror/genomes/index/
 ##########################################################
 
 bowtie:
-    genome : hg38
+    genome : mm10
 
     genome_dir: /ifs/mirror/genomes/bowtie/
 
@@ -125,9 +142,9 @@ Wald:
     # Select the column with the contrast for your analysis
     value: Condition
     # Select the control
-    control: k10
+    control: cel_s
     # Select the test value
-    test: k150
+    test: ev_s
 
 # If the LRT test is set then specify the full and reduced model
 LRT:   
