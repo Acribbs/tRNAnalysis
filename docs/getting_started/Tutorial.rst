@@ -48,7 +48,7 @@ cluster remove the ``--no-cluster`` option and the pipleine will distribute your
    There are many commandline options available to run the pipeline. To see available options please run :code:`trnanalysis --help`.
 
 
-The pipeline is mostly qite quick to execture. However, it can take a considerable time to generate the bowtie indexes, in the future we will parameterise this so you can use pre-configured bowtie indexes to these do not have to keep being generated each time the pipeline is ran.
+The pipeline is mostly quite quick to execute. However, it can take a considerable time to generate the bowtie indexes, in the future we will parameterise this so you can use pre-configured bowtie indexes so these do not have to keep being generated each time the pipeline is ran.
 
 **4.** Generate a report
 
