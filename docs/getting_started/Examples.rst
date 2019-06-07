@@ -48,7 +48,7 @@ directory.
 
 However, the tRNAnalysis example comes with test data and this can be downloaded by running::
 
-	wge https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
+	wget https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
 	tar -zxvf test_trna.tar.gz
 	cd test_trna
 
