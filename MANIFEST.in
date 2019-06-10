@@ -3,3 +3,4 @@ include trnanalysis/R/*.R
 include trnanalysis/R/*.Rmd
 include trnanalysis/pipeline_trna/*
 include trnanalysis/Rmarkdown/*
+include trnanalysis/perl/*
