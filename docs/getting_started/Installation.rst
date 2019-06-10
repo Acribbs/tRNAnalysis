@@ -19,6 +19,10 @@ tRNAnalysis is currently installed using the bioconda channel and the recipe can
 
     conda install - bioconda trnanalysis
 
+Please check that cgat-apps is version 0.5.3 and not 0.5.4. If you have this installed then please run::
+
+    conda install cgat-apps=0.5.3
+
 Temporarily, we have also hosted a linux version only on anaconda which can downloaded as follows::
 
     conda install -c cgat trnanalysis
