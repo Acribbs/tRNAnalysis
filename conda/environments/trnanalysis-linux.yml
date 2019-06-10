@@ -342,10 +342,10 @@ dependencies:
   - xorg-libxrender=0.9.10=h516909a_1002
   - xorg-renderproto=0.11.1=h14c3975_1002
   - xorg-xextproto=7.3.0=h14c3975_1002
-  - xorg-xp4=h14c3975_1001
   - yaml=0.1.7=h14c3975_1001
   - zlib=1.2.11=h14c3975_1004
   - zstd=1.4.0=h3b9ef0a_0
   - pip:
     - trnanalysis==0.1.6
+    - xorg-xp4=h14c3975_1001
 
