@@ -20,7 +20,8 @@ Our pipeline can be used for evaluating the levels of small RNAs in a sample, bu
 
 ### Conda installation
 
-The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). 
+The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). However, at the moment we are experiencing issues with a broken dependancy so I would suggest either installation using pip and manually install dependancies (although there are a lot)
+or more easily, use the linux environment in the **Conda environment** section.
 
 To install trnanalysis using conda::
     
