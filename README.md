@@ -29,7 +29,7 @@ To install trnanalysis using conda::
 ### Conda environment
 
 Conda is an awesome project, however it can suffer from significant issues relating to how long it takes the solver to
-fix installation issues. For more information regarding these conda issues please see `bioconda issues <https://github.com/conda/conda/issues/7239>`_.
+fix installation issues. For more information regarding these conda issues please see [bioconda issues](https://github.com/conda/conda/issues/7239).
 
 In order to try and speed things up we have provided a conda environment for installation. Currently only linux is supported and it can
 be installed by doing the following::
