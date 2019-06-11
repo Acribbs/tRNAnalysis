@@ -15,7 +15,9 @@ has an emphasis on profiling nuclear and mitochondrial tRNA fragments.
 Citation
 --------
 
-To be added .....
+Currently we have a bioRxiv pre-print available:
+
+`tRNAnalysis: A flexible pre-processing and next-generation sequencing data analysis pipeline for transfer RNA <https://www.biorxiv.org/content/10.1101/655829v1?rss=1>`_
 
 -------
 Support
