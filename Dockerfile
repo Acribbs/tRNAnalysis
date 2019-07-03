@@ -3,8 +3,9 @@ MAINTAINER Adam Cribbs <adam.cribbs@ndorms.ox.ac.uk>
 ENV SINGULARITY_VERSION=2.4.5
 ADD . /tmp/repo
 WORKDIR /tmp/repo
-ENV SHELL /bin/bash
 ENV PATH /opt/conda/bin:${PATH}
+ENV LANG C.UTF-8
+ENV SHELL /bin/bash
 RUN install_packages wget bzip2 ca-certificates gnupg2 squashfs-tools git && \
     wget -O- http://neuro.debian.net/lists/xenial.us-ca.full > /etc/apt/sources.list.d/neurodebian.sources.list && \
     wget -O- http://neuro.debian.net/_static/neuro.debian.net.asc | apt-key add - && \
