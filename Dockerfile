@@ -1,16 +1,16 @@
-FROM phusion/baseimage:0.11
+FROM bitnami/minideb:stretch
 MAINTAINER Adam Cribbs <adam.cribbs@ndorms.ox.ac.uk>
-
-CMD ["/sbin/my_init"]
+ENV SINGULARITY_VERSION=2.4.5
 ADD . /tmp/repo
 WORKDIR /tmp/repo
 ENV SHELL /bin/bash
-ENV LANG C.UTF-8
-FROM continuumio/miniconda3
-ADD conda/environments/trnanalysis.yml /tmp/environment.yml
-RUN conda env create -f /tmp/environment.yml
-RUN echo "source activate $(head -1 /tml/environment.yml | cut -d ' ' -f2)" > ~/.bashrc
-ENV PATH /opt/conda/envs/$(head -1 /tmp/environment.yml| cut -d' ' -f2)/bin:$PATH
-ENTRYPOINT ["python"]
-CMD ["setup.py develop"]
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ENV PATH /opt/conda/bin:${PATH}
+RUN install_packages wget bzip2 ca-certificates gnupg2 squashfs-tools git && \
+    wget -O- http://neuro.debian.net/lists/xenial.us-ca.full > /etc/apt/sources.list.d/neurodebian.sources.list && \
+    wget -O- http://neuro.debian.net/_static/neuro.debian.net.asc | apt-key add - && \
+    install_packages singularity-container && \
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda && \
+    rm Miniconda3-latest-Linux-x86_64.sh && \
+    conda update -n base -c defaults conda && conda env update --name root --file conda/environments/trnanalysis.yml && conda clean --all -y && \
+    pip install .
