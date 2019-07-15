@@ -119,7 +119,12 @@ bowtie:
 
     genome_dir: /ifs/mirror/genomes/bowtie/
 
-    options: --local --very-sensitive-local
+    # These are the options used for mapping tRNA fragments to
+    # a genome. I have noticed that the mapping can be affected
+    # substantially by modification of these paramaters. The default ones are
+    # mostly fine for most samples but you may like to experiment with
+    # these options
+    options: -n 3 -k 5 -l 20 -e 500
 
 ###########################################################
 # Differential expression

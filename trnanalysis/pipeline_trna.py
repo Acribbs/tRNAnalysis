@@ -608,7 +608,7 @@ def pre_mapping_artificial(infiles, outfile):
     fastq_name = fastq.replace(".fastq.gz","")
     fastq_name = fastq.replace("processed.dir/","")
 
-    statement = """bowtie -n 3 -k 1 --best -e 800 --sam  %(index_name)s %(fastq)s 2> pre_mapping_bams.dir/%(fastq_name)s.log |
+    statement = """bowtie %(bowtie_options)s --sam  %(index_name)s %(fastq)s 2> pre_mapping_bams.dir/%(fastq_name)s.log |
                    samtools view -b -o %(outfile)s
                    """
 
@@ -687,7 +687,7 @@ def post_mapping_cluster(infiles, outfile):
 
     temp_file = P.get_temp_filename(".")
 
-    statement = """bowtie -n 3 -k 1 --best -e 800 --sam  %(genome_name)s %(fastqfile)s 2> tRNA-mapping.dir/cluster.log | samtools view -bS |
+    statement = """bowtie %(bowtie_options)s --sam  %(genome_name)s %(fastqfile)s 2> tRNA-mapping.dir/cluster.log | samtools view -bS |
                    samtools sort -T %(temp_file)s -o %(outfile)s &&
                    samtools index %(outfile)s"""
 
