@@ -20,11 +20,31 @@ Our pipeline can be used for evaluating the levels of small RNAs in a sample, bu
 
 ### Conda installation
 
-The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). 
+The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). However, at the moment we are experiencing issues with a broken dependancy so I would suggest either installation using pip and manually install dependancies (although there are a lot)
+or more easily, use the linux environment in the **Conda environment** section.
 
 To install trnanalysis using conda::
     
     conda install -c bioconda trnanalysis
+
+### Conda environment
+
+Conda is an awesome project, however it can suffer from significant issues relating to how long it takes the solver to
+fix installation issues. For more information regarding these conda issues please see [bioconda issues](https://github.com/conda/conda/issues/7239).
+
+In order to try and speed things up we have provided a conda environment for installation. Currently only linux is supported and it can
+be installed by doing the following::
+
+    wget https://raw.githubusercontent.com/Acribbs/tRNAnalysis/master/conda/environments/trnanalysis-linux.yml
+    conda env create -f trnanalysis-linux.yml 
+    conda activate trnanalysis-env
+
+### Pip installation
+
+trnanalysis can also be installed using pip::
+
+    pip install trnanalysis
+
 
 ### Manual installation
 
