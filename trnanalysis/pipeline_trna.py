@@ -568,14 +568,16 @@ def create_fragment_bed(infile, outfile):
     """Take the clusterInfo and create a bed file containing all of the fragments of tRNAs"""
 
     cluster_info = infile.replace("_cluster.fa","_clusterInfo.fa")
+    tmp_file = P.get_temp_filename(".")
 
     PY_SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
                                            "python"))
 
-    print(cluster_info)
-    statement = """python %(PY_SRC_PATH)s/trna_fragment_bed.py -I %(cluster_info)s -S %(outfile)s"""
+    statement = """python %(PY_SRC_PATH)s/trna_fragment_bed.py -I %(cluster_info)s -S %(tmp_file)s &&
+                   sort %(tmp_file)s | uniq > %(outfile)s"""
 
     P.run(statement)
+    os.unlink(tmp_file)
 
 
 @transform(mature_trna_cluster,
