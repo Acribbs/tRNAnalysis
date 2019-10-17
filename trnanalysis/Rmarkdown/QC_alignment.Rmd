@@ -30,7 +30,7 @@ library(plotly)
 
 ```{r by_codon, echo=FALSE}
 
-df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
+df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1, check.names=FALSE)
 
  
 
