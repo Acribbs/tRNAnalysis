@@ -94,31 +94,6 @@ get_trnanalysis_env() {
 
 } # get_trnanalysis_env
 
-# check whether the 'cgat-flow' conda environment is enabled or not
-is_env_enabled() {
-    # disable error checking
-    set +e
-
-    # store the result
-    ENV_ENABLED=0
-
-    # is conda available?
-    CONDA_PATH=$(which conda)
-
-    if [[ $? -eq 0 ]] ; then
-        ENV_PATH=$(dirname $(dirname $CONDA_PATH))
-	stat ${ENV_PATH}/envs/cgat-flow >& /dev/null
-	if [[ $? -eq 0 ]] ; then
-            export ENV_ENABLED=1
-	fi
-    fi
-
-    export ENV_ENABLED
-
-    # enable error checking again
-    set -e
-}
-
 
 # setup environment variables
 setup_env_vars() {
@@ -250,7 +225,7 @@ conda_install() {
 
     # activate trnanalysis environment
     log "activating environment"
-    [[ !${ENV_ENABLED} ]] && conda activate ${CONDA_INSTALL_ENV}
+    source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
 
     log "installing trnanalysis code into conda environment"
     # if installation is 'devel' (outside of travis), checkout latest version from github
@@ -271,15 +246,14 @@ conda_test() {
     # get environment variables: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
     get_trnanalysis_env
 
-    #setup_env_vars
+    setup_env_vars
 
     # setup environment and run tests
     if [[ $TRAVIS_INSTALL ]]; then
 
 	# enable Conda env
 	log "activating trnanalysis conda environment"
-	is_env_enabled
-	[[ ! ${ENV_ENABLED} ]] && conda activate ${CONDA_INSTALL_ENV}
+	source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
 
 	# show conda environment used for testing
 	conda env export
@@ -314,7 +288,7 @@ conda_update() {
     # get environment variables: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
     get_trnanalysis_env
 
-    [[ ! ${ENV_ENABLED} ]] && conda activate ${CONDA_INSTALL_ENV}
+    source $CONDA_INSTALL_DIR/bin/activate $CONDA_INSTALL_ENV
     conda update --all
 
     if [[ ! $? -eq 0 ]] ; then
