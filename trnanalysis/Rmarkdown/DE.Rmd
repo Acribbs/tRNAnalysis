@@ -22,7 +22,7 @@ params <- read_yaml("../pipeline.yml")
 
 ```{r imports, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
 
-df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
+df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1, check.names=FALSE)
 
 colnames(df_mRNA) <- gsub("_trna", "", x = colnames(df_mRNA), fixed = T)
 meta_data <- read.table("../meta_data.csv", sep=",", header = TRUE)

@@ -498,7 +498,7 @@ def create_artificial(infiles, outfile):
 
 @transform(create_artificial,
            regex("tRNA-mapping.dir/(\S+)_artificial.fa"),
-           r"tRNA-mapping.dir/\1_artificial.1.ebwt")
+           r"tRNA-mapping.dir/\1_artificial.1.bt2")
 def bowtie_index_artificial(infile, outfile):
     '''generate a bowtie index of the artificial genome 
        ================================================
@@ -510,7 +510,7 @@ def bowtie_index_artificial(infile, outfile):
 
     genome_name = PARAMS['genome']
 
-    statement = """ bowtie-build %(infile)s tRNA-mapping.dir/%(genome_name)s_artificial 2> tRNA-mapping.dir/bowtie-build_artificial.log """
+    statement = """ bowtie2-build %(infile)s tRNA-mapping.dir/%(genome_name)s_artificial 2> tRNA-mapping.dir/bowtie-build_artificial.log """
 
     P.run(statement)
 
@@ -582,7 +582,7 @@ def create_fragment_bed(infile, outfile):
 
 @transform(mature_trna_cluster,
            regex("tRNA-mapping.dir/(\S+).fa"),
-           r"tRNA-mapping.dir/\1.1.ebwt")
+           r"tRNA-mapping.dir/\1.1.bt2")
 def index_trna_cluster(infile, outfile):
     """index tRNA clusters"""
 
@@ -591,7 +591,7 @@ def index_trna_cluster(infile, outfile):
     job_memory = "4G"
 
     statement = """samtools faidx %(infile)s &&
-                   bowtie-build %(infile)s tRNA-mapping.dir/%(genome_name)s_cluster 2> bowtie_cluster.log
+                   bowtie2-build %(infile)s tRNA-mapping.dir/%(genome_name)s_cluster 2> bowtie_cluster.log
                 """
     P.run(statement)
 
@@ -606,11 +606,11 @@ def pre_mapping_artificial(infiles, outfile):
 
     fastq, bowtie_index_artificial = infiles
 
-    index_name = bowtie_index_artificial.replace(".1.ebwt", "")
+    index_name = bowtie_index_artificial.replace(".1.bt2", "")
     fastq_name = fastq.replace(".fastq.gz","")
     fastq_name = fastq.replace("processed.dir/","")
 
-    statement = """bowtie %(bowtie_options)s --sam  %(index_name)s %(fastq)s 2> pre_mapping_bams.dir/%(fastq_name)s.log |
+    statement = """bowtie2 %(bowtie_options)s  -x %(index_name)s %(fastq)s 2> pre_mapping_bams.dir/%(fastq_name)s.log |
                    samtools view -b -o %(outfile)s
                    """
 
@@ -685,11 +685,11 @@ def post_mapping_cluster(infiles, outfile):
 
     fastqfile, database, bowtie_index_cluster = infiles
 
-    genome_name = bowtie_index_cluster.replace(".1.ebwt","")
+    genome_name = bowtie_index_cluster.replace(".1.bt2","")
 
     temp_file = P.get_temp_filename(".")
 
-    statement = """bowtie %(bowtie_options)s --sam  %(genome_name)s %(fastqfile)s 2> tRNA-mapping.dir/cluster.log | samtools view -bS |
+    statement = """bowtie2 %(bowtie_options)s  -x  %(genome_name)s %(fastqfile)s 2> tRNA-mapping.dir/cluster.log | samtools view -bS |
                    samtools sort -T %(temp_file)s -o %(outfile)s &&
                    samtools index %(outfile)s"""
 
