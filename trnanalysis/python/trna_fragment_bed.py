@@ -97,7 +97,7 @@ def main(argv=None):
         for cur_record in iterator:
             
             title = cur_record.title
-            m = re.match("(cluster\d+):chr\S+.tRNA\d+-(\S+)-\((\S+)\)", title)
+            m = re.match(r"(cluster\d+):chr\S+.tRNA\d+-(\S+)([+|-])", title.replace("(","").replace(")",""))
 
             cluster = m.group(1)
             trna_group = m.group(2)

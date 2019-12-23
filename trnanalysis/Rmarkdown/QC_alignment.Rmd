@@ -34,7 +34,7 @@ df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = 
 
  
 
-data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):(.*)-"))
+data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):(.*)"))
 
 data <- cbind(data, df_mRNA)
 

@@ -102,7 +102,7 @@ def main(argv=None):
         cluster_dict[key] = n
         # output this to std out
 
-        m = re.match("(\S+)-(\S+)(\(\S+\))", value)
+        m = re.match("(\S+)-(\S+)-(\S+)-\S+", value.replace("(","").replace(")",""))
 
         value = m.group(2)
 
