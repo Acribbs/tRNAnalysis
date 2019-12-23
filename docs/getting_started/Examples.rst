@@ -28,68 +28,6 @@ found in the following `directory <https://www.cgat.org/downloads/public/adam/da
 using the yml configuration file.
 
 
-.. _getting_started-setting-up-pipeline:
-
-Setting up the pipeline
-=======================
-
-**Step 1**: Install tRNAnalysis:
-
-Check that your computing environment is appropriate and follow tRNAnalysis installation instructions (see `Installation instructions <https://trnanalysis.readthedocs.io/en/latest/getting_started/Installation.html>`_).
-
-**Step2**: To run a pipeline you will need to create a working directory
-and enter it. For example::
-
-   mkdir version1
-   cd version1/
-
-This is where the toy example pipeline will be executed and files will be generated in this
-directory.
-
-However, the tRNAnalysis example comes with test data and this can be downloaded by running::
-
-	wget https://www.cgat.org/downloads/public/adam/trnanalysis/test_trna.tar.gz
-	tar -zxvf test_trna.tar.gz
-	cd test_trna
-
-**Step 3**: Configure the cluster
-
-Running pipelines on a cluster required the drmaa API settings to be configures and passed
-to cgatcore. The default cluster engine is SGE, however we also support SLURM and Torque/PBSpro.
-In order to execute using a non SGE cluster you will need to setup a `.cgat.yml` file in your
-home directory and specify parameters according to the `cluster configuration documentation <https://cgat-core.readthedocs.io/en/latest/getting_started/Cluster_config.html>`_.
-
-**Step 4**: Set up the configuration infomation
-
-tRNAnalysis is written with minimal hard coded options. Therefore,
-to run tRNAnalysis an initial configuration file needs to be
-generated. A configuration file with all the default values can be obtained by
-running::
-
-      trnanalysis trna config
-
-
-This will create a new :file:`pipeline.yml` file. **YOU MUST EDIT THIS
-FILE**. The default values are unlikely to be configured correctly for your data. The
-configuration file should be well documented in CGAT-core and the format is
-a simple yaml file. 
-
-In addition, to run differential expression analysis you will need to
-generate a file called `meta_data.csv`, and this file should be placed in 
-the directory where the pipeline will be executed. The tutorial provides an example
-of how this can be formatted. The convention is as follows:
-
-Sample, Condition, sample_type
-CELL_NAME1, treatment1, cell1
-CELL_NAME2, treatemnt2, cell1
-
-**Step 5**: Add the input files (fastqs, tScan-SE file (can be downloaded from our `ftp server <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_)). The input files are required to be in the directory that tRNAnalysis will be ran in. In the tutorial this is already done for you.
-
-**Step 6**: You can check if all the external dependencies to tools and
-R packages are satisfied by running::
-
-      trnanalysis trna check
-
 .. _getting_started-pipelineRunning:
 
 Running tRNAnalysis
