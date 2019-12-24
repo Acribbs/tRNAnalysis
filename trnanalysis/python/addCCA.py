@@ -73,9 +73,9 @@ def main(argv=None):
         # This is a temp fix because bedtools getfasta --name seems to have
         # changed the way it names the fasta titles. This may be temp but This
         # will fix this issue for the time being.
-        #m = re.match("(cluster\d+):chr\S+.tRNA\d+-(\S+)-\((\S+)\)", title)
+        m = re.match("(chr\d+.tRNA\d+-\S+)-::\S+([+|-])", title.replace("(","").replace(")",""))
 
-        #key = m.group(0)
+        key = m.group(1)
 
         else:
             d[key] = cur_record.sequence
