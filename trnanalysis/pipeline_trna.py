@@ -196,7 +196,7 @@ def process_gtf(infiles, outfile):
                 zcat < %(repeats)s | cgat gff2bed --set-name=class |
                 cgat bed2gff --as-gtf | gzip > gtf.dir/rna.gtf.gz &&
                 zcat < %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | gzip > gtf.dir/ensembl.gtf.gz &&
-                zcat < gtf.dir/rna.gtf.gz gtf.dir/ensembl.gtf.gz > %(outfile)s
+                zcat < gtf.dir/rna.gtf.gz < gtf.dir/ensembl.gtf.gz > %(outfile)s
                 """
 
     P.run(statement)
