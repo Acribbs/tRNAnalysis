@@ -133,7 +133,7 @@ ggplotly(plot)
 # Percentage of tRNA by amino acid
 
 ```{r}
-data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):([A-Z][a-z][a-z]).*-"))
+data <- as.data.frame(str_match(rownames(df_mRNA), "(.*[0-9]+):([A-Z][a-z][a-z]).*"))
 
 data <- cbind(data, df_mRNA)
 
