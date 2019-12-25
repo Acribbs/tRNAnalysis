@@ -67,13 +67,14 @@ def main(argv=None):
     for cur_record in iterator:
 
 
-        #key = cur_record.title
         # This is a temp fix because bedtools getfasta --name seems to have
         # changed the way it names the fasta titles. This may be temp but This
         # will fix this issue for the time being.
-        m = re.match("(chr\d+.tRNA\d+-\S+)-::\S+[+|-]", cur_record.title.replace("(","").replace(")",""))
+        m = re.match("(chr\d+.tRNA\d+-\S+)-\S*::\S+[+|-]", cur_record.title.replace("(","").replace(")",""))
 
-        key = m.group(0)
+        key = str(m.group(1))
+        #key = cur_record.title
+
         if "pseudo" in key:
             pass
 
