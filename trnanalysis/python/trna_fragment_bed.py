@@ -97,13 +97,13 @@ def main(argv=None):
         for cur_record in iterator:
             
             title = cur_record.title
-            m = re.match("(cluster\d+):chr\S+.tRNA\d+-(\S+)-\((\S+)\)", title)
+            m = re.match("(cluster\d+):chr\d+.tRNA\d+-(\S+)-([+|-])", title)
 
             cluster = m.group(1)
             trna_group = m.group(2)
             strand = m.group(3)
 
-            chrom = cluster + ":" + trna_group + "-"
+            chrom = cluster + ":" + trna_group
             score = "."
             print(trna)
             if trna == "tRH-5'":
