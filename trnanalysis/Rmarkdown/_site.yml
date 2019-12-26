@@ -9,6 +9,9 @@ navbar:
   - text: QC-report
     icon: fa-link
     href: QC_report.html
+  - text: Clustering
+    icon: fa-link
+    href: Clustering.html
   - text: Diff expression
     icon: fa-link
     href: DE.html
