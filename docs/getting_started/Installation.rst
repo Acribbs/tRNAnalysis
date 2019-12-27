@@ -5,29 +5,22 @@
 Installation
 ============
 
-The following sections describe how to install tRNAnalysis. 
+The following sections describe how to install tRNAnalysis.
 
 .. _getting_started-Conda:
 
 Conda Installation
 ------------------
 
-The our preffered method of installation is using conda. However, at the moment we have had to pin one of the projects and
-it takes a while for the solver to install the project. Threfore, if the installation does take a long time it
-may be better to follow the **Conda environment** installation instructions. If you dont have conda installed then
+The our preffered method of installation is using conda. If you dont have conda installed then
 please install conda using `miniconda <https://conda.io/miniconda.html>`_ or `anaconda <https://www.anaconda.com/download/#macos>`_.
 
-tRNAnalysis is currently installed using the bioconda channel and the recipe can be found on `github `_. To install tRNAnalysis::
+tRNAnalysis is currently installed using the bioconda channel and the recipe can be found on `github `_.
 
-    conda install - bioconda trnanalysis
+To install tRNAnalysis::
 
-Please check that cgat-apps is version 0.5.3 and not 0.5.4. If you have this installed then please run::
+    conda install -c bioconda trnanalysis
 
-    conda install cgat-apps=0.5.3
-
-Temporarily, we have also hosted a linux version only on anaconda which can downloaded as follows::
-
-    conda install -c cgat trnanalysis
 
 Conda environment
 -----------------
@@ -39,7 +32,7 @@ In order to try and speed things up we have provided a conda environment for ins
 be installed by doing the following::
 
     wget https://raw.githubusercontent.com/Acribbs/tRNAnalysis/master/conda/environments/trnanalysis-linux.yml
-    conda env create -f trnanalysis-linux.yml 
+    conda env create -f trnanalysis-linux.yml
     conda activate trnanalysis-env
 
 .. _getting_started-Automated:
@@ -47,7 +40,7 @@ be installed by doing the following::
 
 Pip installation
 ----------------
-We recommend installation through conda because it manages the dependencies. Despite this, tRNAnalysis
+We recommend installation through conda because it manages the dependencies. However, tRNAnalysis
 can also be installed easily using the pip package manager. However, you will also have to
 install other dependencies manually::
 
