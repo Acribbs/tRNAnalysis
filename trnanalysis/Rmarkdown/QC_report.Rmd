@@ -22,6 +22,7 @@ library("knitr")
 library("fastqcr")
 library(DT)
 library(RColorBrewer)
+library(plotly)
 ```
 
 Report generated based on data located in `r getwd()` \  
@@ -69,7 +70,7 @@ Mapped vs unmapped reads
 samtools_plot <- ggplot(data=sam_tools, aes(x=Sample, y=Number, fill=`Mapped/Unmapped`)) +
   geom_bar(stat="identity") + coord_flip() + fill_palette("lancet")
 
-print(samtools_plot)
+ggplotly(samtools_plot)
 ```
 
 ### Percentages
@@ -78,7 +79,7 @@ Mapped vs unmapped reads
 samtools_plot_percent <- ggplot(data=sam_tools, aes(x=Sample, y=Percentages, fill=`Mapped/Unmapped`)) +
   geom_bar(stat="identity") + coord_flip() + fill_palette("lancet")
 
-print(samtools_plot_percent)
+ggplotly(samtools_plot_percent)
 ```
 
 ## Alignment Metrics 
@@ -150,12 +151,12 @@ bowtie_plot_percent <- ggplot(data=bowtie, aes(x=Sample, y=Percentages, fill=`Al
 
 ## Number of Reads
 ```{r number_bowtie_plot, echo = FALSE}
-print(bowtie_plot)
+ggplotly(bowtie_plot)
 ```
 
 ## Percentages
 ```{r percent_bowtie_plot, echo = FALSE}
-print(bowtie_plot_percent)
+ggplotly(bowtie_plot_percent)
 ```
 
 # Feature Counts 
@@ -237,12 +238,12 @@ fc_tibble_final <- fc_tibble[, !names(fc_tibble) %in% c("Total")]
 
 ### Number of reads
 ```{r fc_plot2, echo = FALSE}
-print(feature_count_plot)
+ggplotly(feature_count_plot)
 ```
 `r datatable(fc_tibble_final)`
 
 ### Percentages
 ```{r fc_plot3, echo = FALSE}
-print(feature_count_plot_percent)
+ggplotly(feature_count_plot_percent)
 ```
 

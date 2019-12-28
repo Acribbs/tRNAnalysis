@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r}
-knitr::opts_chunk$set(cache=FALSE)
+knitr::opts_chunk$set(cache=FALSE, warning = FALSE, message = FALSE)
 source('functions.R')
 library(org.Hs.eg.db)
 library(DESeq2)
