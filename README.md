@@ -15,6 +15,11 @@ This workflow was generated as a response to not being able to effectively analy
 
 Our pipeline can be used for evaluating the levels of small RNAs in a sample, but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment analysis.The pipeline is in constant development and further features will be added in the future. For example, we will extend our pipeline to perform detailed anaysis of miRNAs and plan to write an R shiny framework for interactive report features.
 
+## Documentation
+
+Further help that introduces tRNAnalysis and provides a tutorial of how to run example
+code can be found at [read the docs](https://trnanalysis.readthedocs.io/en/latest/)
+
 ## Installation
 
 
@@ -71,8 +76,3 @@ for the tRNA analysis run::
 Running locally or on a cluster - the default setting to run trnanalysis is on a cluster, with SLURM, SGC, Torque and PBS/pro
 currently supported. However, if you dont have access to a cluster then tRNAnalsysis can be executed locally by adding `--no-cluster` as a 
 commandline argument. 
-
-## Documentation
-
-Further help that introduces tRNAnalysis and provides a tutorial of how to run example
-code can be found at [read the docs](https://trnanalysis.readthedocs.io/en/latest/)
