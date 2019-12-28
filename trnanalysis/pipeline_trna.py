@@ -7,14 +7,14 @@ Overview
 
 This pipeline was developed to accurately map small RNA sequencing data and then perform
 accurate mapping of tRNA reads and qualitatively analyse the resulting data. trnanalysis
-has an emphasis on profiling nuclear and mitochondrial tRNA fragments. 
+has an emphasis on profiling nuclear and mitochondrial tRNA fragments.
 
 
 Requires:
  * a single end fastq file - if you have paired end data we recoment flashing the reads together
  to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
- * ensembl gtf: can be downloaded from 
+ * ensembl gtf: can be downloaded from
 
 segemehl is quite a slow mapper in comparrison to others. However it improves the quality of the tRNA alignment
 
@@ -195,8 +195,8 @@ def process_gtf(infiles, outfile):
     statement = """
                 zcat < %(repeats)s | cgat gff2bed --set-name=class |
                 cgat bed2gff --as-gtf | gzip > gtf.dir/rna.gtf.gz &&
-                zcat %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | gzip > gtf.dir/ensembl.gtf.gz &&
-                zcat gtf.dir/rna.gtf.gz gtf.dir/ensembl.gtf.gz > %(outfile)s
+                zcat < %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | gzip > gtf.dir/ensembl.gtf.gz &&
+                zcat < gtf.dir/rna.gtf.gz < gtf.dir/ensembl.gtf.gz > %(outfile)s
                 """
 
     P.run(statement)
@@ -211,17 +211,17 @@ def count_features(infiles, outfile):
     """
     runs featurecounts to count reads over small RNA features
     """
-    
+
     bamfile, gtf = infiles
-    
-    
+
+
     name = os.path.basename(bamfile)
     outfolder = name.replace(".bam","")
     intermediate = name.replace(".bam",".tsv")
 
     statement = """
                 featureCounts -t exon -g gene_id -a %(gtf)s -o featurecounts.dir/%(outfolder)s/%(intermediate)s %(bamfile)s &&
-                cut -f 1,7 featurecounts.dir/%(outfolder)s/%(intermediate)s > %(outfile)s 
+                cut -f 1,7 featurecounts.dir/%(outfolder)s/%(intermediate)s > %(outfile)s
                """
 
     P.run(statement)
@@ -235,7 +235,7 @@ def merge_features(infiles, outfile):
 
 
     features = ModuleTrna.merge_feature_data(infiles)
-    
+
     features.to_csv(outfile, sep="\t", header=True, index=True)
 
 ###############################################
@@ -296,8 +296,8 @@ def build_bam_stats(infiles, outfile):
     '''
 
     job_memory = "32G"
- 
-    # Only one sample 
+
+    # Only one sample
     if len(infiles)==3:
         bamfile, readsfile, rna_file = infiles
     # If there are multiple samples, programme specifies which .nreads file to use, by matching name to bam file
@@ -312,7 +312,7 @@ def build_bam_stats(infiles, outfile):
                 readsfile = infiles[i]
                 break
             else:
-                continue    
+                continue
 
     nreads = ModuleTrna.getNumReadsFromReadsFile(readsfile)
     track = P.snip(os.path.basename(readsfile),
@@ -389,7 +389,7 @@ def genome_coverage(infiles, outfile):
 
 ################################################
 # Perform mapping of tRNA's as set out in Hoffmann et al 2018
-################################################  
+################################################
 
 @follows(mkdir("tRNA-mapping.dir"))
 @originate("tRNA-mapping.dir/tRNAscan.nuc.csv")
@@ -500,7 +500,7 @@ def create_artificial(infiles, outfile):
            regex("tRNA-mapping.dir/(\S+)_artificial.fa"),
            r"tRNA-mapping.dir/\1_artificial.1.bt2")
 def bowtie_index_artificial(infile, outfile):
-    '''generate a bowtie index of the artificial genome 
+    '''generate a bowtie index of the artificial genome
        ================================================
        ================================================
        Generating a bowtie index can take a while..
@@ -630,10 +630,10 @@ def remove_reads(infiles, outfile):
 
     temp_file = P.get_temp_filename(".")
     temp_file1 = P.get_temp_filename(".")
-    
+
     PY_SRC_PATH = os.path.abspath(os.path.dirname(__file__))
 
-    statement = """samtools view -h %(infile)s> %(temp_file)s && 
+    statement = """samtools view -h %(infile)s> %(temp_file)s &&
                    perl %(PY_SRC_PATH)s/perl/removeGenomeMapper.pl %(pre_trna_genome)s %(temp_file)s %(temp_file1)s &&
                    samtools view -b %(temp_file1)s > %(outfile)s""" % locals()
 
@@ -664,7 +664,7 @@ def keep_mature_trna(infiles, outfile):
 
     samfile, bedfile = infiles
     bedfile = bedfile.replace(".bed12", "")
-    
+
 
     statement = """bedtools intersect -f 1 -wa -abam %(samfile)s -b %(bedfile)s |
                    cgat bam2fastq %(outfile)s"""
@@ -725,7 +725,7 @@ def profile_trna(infiles, outfile):
 
     statement = """sleep 20 && cat %(bedfile)s |
                    cgat bed2gff --as-gtf > %(tmpfile_name)s &&
-                   cgat bam2geneprofile 
+                   cgat bam2geneprofile
                    --output-filename-pattern="%(outfile)s.%%s"
                    --force-output
                    --reporter=gene
@@ -733,7 +733,7 @@ def profile_trna(infiles, outfile):
                    --bam-file=%(bamfile)s
                    --gtf-file=%(tmpfile_name)s
                    | gzip
-                   > %(outfile)s 
+                   > %(outfile)s
                    """
 
     P.run(statement)
@@ -753,7 +753,7 @@ def get_contig_cluster(infile, outfile):
     df_contig = pd.DataFrame(contigs, columns=['contigs', 'size'])
     df_contig.sort_values('contigs', inplace=True)
     df_contig.to_csv(outfile, sep="\t", header=False, index=False)
-    
+
 
 @follows(mkdir("variant_calling.dir/"))
 @transform(post_mapping_cluster,
@@ -765,7 +765,7 @@ def samtools_pileup(infiles, outfile):
 
     infile, cluster_fa = infiles
 
-    statement = """samtools mpileup --no-BAQ --output-tags DP,AD -f %(cluster_fa)s --BCF %(infile)s | 
+    statement = """samtools mpileup --no-BAQ --output-tags DP,AD -f %(cluster_fa)s --BCF %(infile)s |
                    bcftools call --consensus-caller --variants-only --pval-threshold 0.05 -Ov  > %(outfile)s
                    """
 
@@ -809,7 +809,7 @@ def filter_vcf(infile, outfile):
            ".idxstats")
 def idx_stats_post(infile, outfile):
     """perform samtools idxstats to determine percent expression of each cluster of tRNA
-    can be computed - will eventually be passed into r to perform differential 
+    can be computed - will eventually be passed into r to perform differential
     expression analysis and calulate the percent computed"""
 
     statement = "samtools idxstats %(infile)s > %(outfile)s"
@@ -892,7 +892,7 @@ def feature_count_plot(infiles, outfile):
 
     infiles = ":".join(infiles)
     statement = """Rscript %(PY_SRC_PATH)s/R/feature_count_plots.r
-                --input=%(infiles)s 
+                --input=%(infiles)s
                 --output=%(outfile)s
                 """
     P.run(statement)
@@ -942,7 +942,7 @@ def run_rmarkdown(outfile):
     job_memory = "5G"
     # Needs to be re-written so that the whole report is now rendered
     statement = '''cp %(RMD_SRC_PATH)s/* Report.dir/ &&
-                   cd Report.dir && 
+                   cd Report.dir &&
                    R -e "rmarkdown::render_site()" ''' % locals()
 
     P.run(statement)
@@ -960,4 +960,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(P.main(sys.argv))    
+    sys.exit(P.main(sys.argv))

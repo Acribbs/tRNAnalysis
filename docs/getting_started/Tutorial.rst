@@ -10,7 +10,7 @@ Before beginning this tutorial make sure you have tRNAnalysis installed correctl
 please see here (see :ref:`getting_started-Installation`) for installation instructions.
 
 In the following section we will run a toy example pipeline that demonstrates the functionality
-of tRNAnalysis. tRNAnalysis can be run locally or distributed across a cluster. 
+of tRNAnalysis. tRNAnalysis can be run locally or distributed across a cluster.
 This tutorial will explain the steps required to run tRNAnalysis.
 
 Tutorial start
@@ -28,9 +28,9 @@ Tutorial start
    trnanalysis trna config
 
 This will generate a **pipeline.yml** file containing the configuration parameters than can be used to modify
-the output of the pipleine. However, for this tutorial you do not need to modify the parameters to run the 
-pipeline. In the :ref:`modify_config` section below I have detailed how you can modify the config file to
-change the output of the pipeline.
+the output of the pipeline. These parameters can all be modified to change the output or running of tRNAnalysis.
+However, for this tutorial you do not need to modify the parameters to run the pipeline as the default ones are
+appropriate in this instance.
 
 .. note::
 
@@ -41,23 +41,27 @@ change the output of the pipeline.
    trnanalysis trna make full -v5 --no-cluster
 
 This ``--no-cluster`` will run the pipeline locally if you do not have access to a cluster. Alternatively if you have a
-cluster remove the ``--no-cluster`` option and the pipleine will distribute your jobs accross the cluster. For information on how to configure your cluster please see the `cluster config help <https://trnanalysis.readthedocs.io/en/latest/getting_started/Cluster_config.html>`_.
+cluster remove the ``--no-cluster`` option and the pipleine will distribute your jobs accross the cluster.
+For information on how to configure your cluster please see the
+`cluster config help <https://trnanalysis.readthedocs.io/en/latest/getting_started/Cluster_config.html>`_.
 
 .. note::
 
    There are many commandline options available to run the pipeline. To see available options please run :code:`trnanalysis --help`.
 
 
-The pipeline is mostly quite quick to execute. However, it can take a considerable time to generate the bowtie indexes, in the future we will parameterise this so you can use pre-configured bowtie indexes so these do not have to keep being generated each time the pipeline is ran.
+The pipeline is mostly quite quick to execute. However, it can take a considerable time to generate the bowtie indexes,
+in the future we will parameterise this so you can use pre-configured bowtie indexes so these do not have to keep being
+generated each time the pipeline is ran.
 
 **4.** Generate a report
 
-The final step is to generate a report to display the output of the tRNAnalysis. 
+The final step is to generate a report to display the output of the tRNAnalysis.
 In order to generate these reports run the command::
 
     trnanalysis trna make build_report -v 5 --no-cluster
 
-This will generate a MultiQC report in the folder `MultiQC_report.dir/` and an Rmarkdown report in `R_report.dir/Final_report/index.html`. 
+This will generate a MultiQC report in the folder `MultiQC_report.dir/` and an Rmarkdown report in `R_report.dir/Final_report/index.html`.
 
 
-This completes the tutorial for running the tRNAnalysis , hope you find it as useful as we do for analysing tRNA sequencing data. 
+This completes the tutorial for running the tRNAnalysis , hope you find it as useful as we do for analysing tRNA sequencing data.

@@ -66,9 +66,18 @@ def main(argv=None):
     # Remove any pseudo sequences
     for cur_record in iterator:
 
-        key = cur_record.title
+
+        # This is a temp fix because bedtools getfasta --name seems to have
+        # changed the way it names the fasta titles. This may be temp but This
+        # will fix this issue for the time being.
+        m = re.match("(chr\d+.tRNA\d+-\S+)-\S*::\S+([+|-])", cur_record.title.replace("(","").replace(")",""))
+
+        key = str(m.group(1) + "-" + m.group(2))
+        #key = cur_record.title
+
         if "pseudo" in key:
             pass
+
 
         else:
             d[key] = cur_record.sequence
@@ -76,7 +85,7 @@ def main(argv=None):
     # next iterate of over the dict give the cluster a number
     # this will be used to then map back for the info name
 
-    for key, value in d.items():       
+    for key, value in d.items():
         # Add CCA tail
         options.stdout.write((">%s\n%scca\n")%(key, value))
 

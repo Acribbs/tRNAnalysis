@@ -101,10 +101,9 @@ def main(argv=None):
         n +=1
         cluster_dict[key] = n
         # output this to std out
+        m = re.match("(chr\d+).tRNA\d+-(\S+)-(\S+)", value)
 
-        m = re.match("(\S+)-(\S+)-(\S+)-\S+", value.replace("(","").replace(")",""))
-
-        value = m.group(2)
+        value = m.group(1) + "-" + m.group(2) + "-" + m.group(3)
 
         options.stdout.write((">cluster%s:%s\n%s\n")%(n, value, key))
 

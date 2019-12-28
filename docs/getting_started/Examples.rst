@@ -6,9 +6,9 @@ Running a pipeline
 ==================
 
 
-This section provides a tutorial-like introduction of how to run tRNAnalysis. It provides a toy example of
-how the pipeline can be ran using test data. This can act as a showcase example of how you can modify the
-configuration parameters so you are able to run your own pipeline.
+Running tRNAnalysis is easy using the commandline. If you have installed trnanalysis using conda then
+all the software dependancies should have been installed and you are ready to go. A step by step tutorial
+pipeline can be found here: getting_started-Tutorial_.
 
 .. _getting_started-Intro:
 
@@ -17,18 +17,18 @@ Introduction
 
 This pipeline requires the following input:
 
- * a single end fastq file - if you have paired end data we recoment flashing the reads together to make a single file or only using the first read of your paired end data.
+ * a single end fastq file - if you have paired end data we recommend flashing the reads together to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
  * ensembl gtf: we recomend that you download out gtf files that have been sanitised for out pipeline `here <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_.
 
 
-**Optionally** to make the pipeline run faster you can also use a downloaded tRNAscan-SE output. The most time consuming part of the pipeline is running tScan-SE to identify tRNAs acorss the genome.
+**Optionally** to make the pipeline run faster you can also use a downloaded tRNAscan-SE output. The most time consuming part of the pipeline is running tScan-SE to identify tRNAs across the genome.
 In order to speed the pipeline execution we have pre-ran tScan-SE and generated the outputs that can be
 found in the following `directory <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_ . You can then tell the pipeline the location of the file
 using the yml configuration file.
 
 
-.. _getting_started-pipelineRunning:
+.. _getting_started-setting-up-pipeline:
 
 Running tRNAnalysis
 ===================
@@ -36,7 +36,7 @@ Running tRNAnalysis
 Command line usage information is available by running::
 
    trnanalysis trna --help
-   
+
 
 The basic syntax for running tRNAnalysis is::
 
@@ -60,8 +60,8 @@ plot <task>
 
 touch <task>
 
-   touch files without running task or its pre-requisites. This sets the 
-   timestamps for files in task and its pre-requisites such that they will 
+   touch files without running task or its pre-requisites. This sets the
+   timestamps for files in task and its pre-requisites such that they will
    seem up-to-date to the pipeline.
 
 config
@@ -91,7 +91,7 @@ It is also more explicit::
 Additional options
 ------------------
 
-In addition to running tRNAanalysis with default command line options, running trnaanalysis 
+In addition to running tRNAanalysis with default command line options, running trnaanalysis
 with --help will allow you to see additional options for ``workflow arguments``
 when running the pipelines. These will modify the way the pipeline in ran.
 
@@ -150,7 +150,7 @@ you are able to fix the error, remove the output files of the step in
 which the error occured and restart the pipeline. Processing should
 resume at the appropriate point.
 
-.. note:: 
+.. note::
 
    Look out for upstream errors. For example, the pipeline might build
    a geneset filtering by a certain set of contigs. If the contig
