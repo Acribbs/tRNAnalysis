@@ -3,8 +3,8 @@ title: "Differential expression"
 output: html_document
 ---
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(cache=FALSE, warning = FALSE, message = FALSE)
+```{r, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(cache=TRUE, warning=FALSE, message=FALSE)
 source('functions.R')
 library(org.Hs.eg.db)
 library(DESeq2)
@@ -14,7 +14,6 @@ library(DT)
 library(yaml)
 library(ggplot2) 
 library(ggrepel) 
-library(plotly)
 ```
 
 ```{r yaml, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
