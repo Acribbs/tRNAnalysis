@@ -3,8 +3,8 @@ title: "Differential expression"
 output: html_document
 ---
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(cache=TRUE)
+```{r, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(cache=TRUE, warning=FALSE, message=FALSE)
 source('functions.R')
 library(org.Hs.eg.db)
 library(DESeq2)
