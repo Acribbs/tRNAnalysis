@@ -70,16 +70,14 @@ def main(argv=None):
         # This is a temp fix because bedtools getfasta --name seems to have
         # changed the way it names the fasta titles. This may be temp but This
         # will fix this issue for the time being.
-        m = re.match("(chr\d+.tRNA\d+-\S+)-\S*::\S+([+|-])", cur_record.title.replace("(","").replace(")",""))
+        m = re.match("(chr\d+.tRNA\d+-\S+-(pseudo)?)::\S+([+|-])", cur_record.title.replace("(","").replace(")",""))
 
-        key = str(m.group(1) + "-" + m.group(2))
-        #key = cur_record.title
-
-        if "pseudo" in key:
+        if m == None:
+            continue
+        if m.group(2) == "pseudo":
             pass
-
-
         else:
+            key = str(m.group(1) +  m.group(3))
             d[key] = cur_record.sequence
 
     # next iterate of over the dict give the cluster a number
