@@ -116,8 +116,8 @@ fc_tibble_all_samples_nonzero <- fc_tibble_all_samples_nonzero %>%
 
 plot_me <- melt(fc_tibble_all_samples_nonzero, by="Row.names")
 qual_cols_pal <- brewer.pal.info[brewer.pal.info$category == "qual",]
-col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal)))
-
+n = length(unique(plot_me$RNA))
+col_vector <- c(unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_cols_pal))), sample(color, max(n-74,0)))
 
 plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
 
