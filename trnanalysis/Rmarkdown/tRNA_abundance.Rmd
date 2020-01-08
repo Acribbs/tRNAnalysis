@@ -1,5 +1,5 @@
 ---
-title: "tRNA alignment"
+title: "tRNA abundance"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 author: "`r Sys.info()[[7]]`"
 output:
@@ -26,6 +26,8 @@ library(DT)
 library(RColorBrewer)
 library(plotly)
 ```
+
+# Top 10 tRNAs with highest counts
 
 ```{r by_codon, echo=FALSE}
 
@@ -73,10 +75,13 @@ features <- melt(as.matrix(final), by="Row.names")
 plot <- ggplot(features, aes(x = Var2, y = value, fill = Var1)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
-  theme(axis.text.x = element_text(angle=90, hjust=1))+ theme_bw()+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle=90, hjust=1))+ theme_bw()+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Sample", fill = "tRNA", y = "Value")
 
 ggplotly(plot)
 ```
+
+# Percentage of counts for all tRNAs
 
 ```{r}
 num_samples <- length(colnames(data_1))
@@ -124,7 +129,8 @@ col_vector <- c(unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual
 plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
-  theme(axis.text.x = element_text(angle=90, hjust=1))  + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle=90, hjust=1))  + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Sample", fill = "tRNA", y = "Percentage")
 
 ggplotly(plot)
 ```
@@ -149,11 +155,7 @@ data$V3 <- NULL
 
 data_1 <- data %>%  dplyr::group_by(V4)
 
- 
-
 data_1 %>%  summarise_all(sum) -> data_1
-
- 
 
 data_1 <- na.omit(data_1)
 
@@ -208,7 +210,8 @@ col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_c
 plot <- ggplot(plot_me, aes(x = variable, y = value, fill = RNA)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
-  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Sample", fill = "tRNA by amino acid", y = "Percentage")
 
 
 ggplotly(plot)
@@ -216,9 +219,9 @@ ggplotly(plot)
 
 # Total tRNA fragments
 
-chrom needs to be this: cluster2:chr1-GlyCCC-+ for fragment_coverage.bed to that overlaps can take place
 
 ```{r}
+# chrom needs to be this: cluster2:chr1-GlyCCC-+ for fragment_coverage.bed to that overlaps can take place
 file_paths = list.files(path= "../tRNA-mapping.dir",pattern='_coverage.bed$', recursive=TRUE, full.names = TRUE)
 num_samples <- length(file_paths)
 feature_count_tibble = data.frame(matrix(ncol = 0, nrow=7))
@@ -251,7 +254,8 @@ col_vector <- unlist(mapply(brewer.pal, qual_cols_pal$maxcolors, rownames(qual_c
 plot <- ggplot(feature_count_tibble, aes(x = Sample, y = Percentages, fill = fragment)) +
 
        geom_bar(stat = 'identity') + scale_fill_manual(values=col_vector)+
-  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme(axis.text.x = element_text(angle=90, hjust=1)) + theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Sample", fill = "fragment", y = "Percentage")
 
 ggplotly(plot)
 

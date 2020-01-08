@@ -3,6 +3,8 @@ title: "Differential expression"
 output: html_document
 ---
 
+Differential expression between control samples and test/stimulated samples. Wald test or likelihood ratio test (LRT) test used to analyse differential expression between conditions. 
+
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(cache=TRUE, warning=FALSE, message=FALSE)
 source('functions.R')
@@ -39,9 +41,11 @@ all(rownames(meta_data) %in% colnames(df_mRNA))
 # Decide if LRT or Wald test is to be ran
 if (params$diff_eprs$model == "Wald") {
   res <- run_deseq2(as.data.frame(df_mRNA), meta_data, control=params$Wald$control, test=params$Wald$test, value=params$Wald$value, design=params$diff_eprs$design)
+  de_test <- "Wald"
 } else{
   res <- run_deseq2_LRT(as.data.frame(df_mRNA), meta_data, design=params$diff_eprs$design,
                         full=params$LRT$full, reduced=params$LRT$reduced)
+  de_test <- "LRT"
 }
 
 
@@ -49,6 +53,7 @@ if (params$diff_eprs$model == "Wald") {
 ```
 
 # Results - summary
+`r de_test` test used for DE analysis. This can be changed in the pipeline.yml file. 
 
 ```{r , echo=FALSE}
 summary(res, alpha=0.01)
@@ -57,16 +62,19 @@ res_output<- as.data.frame(res)
 write.csv(res_output, file="res.csv")
 ```
 
+Download significant results (p < 0.01):
+<a href="res.csv" download=""><button class="btn"><i class="fa fa-download"></i> Download</button></a>
+
 # Results - full table
 
-```{r}
+```{r, echo = FALSE}
 datatable(res_output)
 ```
 
 
 # MA plot
 
-```{r }
+```{r MA, echo = FALSE}
 DESeq2::plotMA(res)
 ```
 
@@ -88,8 +96,7 @@ symbol_data <- head(input, 10)
 #convert the rownames to a column
 volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2Foldchange versus pvalue
     geom_point(aes(col=sig)) + #add points colored by significance
-geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") +
-      ggtitle("Vesicles") #e.g. 'Volcanoplot DESeq2'
+geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") 
 
 volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
 

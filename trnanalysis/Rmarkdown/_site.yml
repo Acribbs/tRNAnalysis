@@ -3,17 +3,19 @@ navbar:
   title: Analysis of tRNA
   right:
   - text: Home
+    icon: fa-home
     href: index.html
-  - text: read QC
-    href: QC_alignment.html
-  - text: QC-report
-    icon: fa-link
+  - text: tRNA abundance
+    icon: fa-bar-chart
+    href: tRNA_abundance.html
+  - text: Quality control
+    icon: fa-filter
     href: QC_report.html
   - text: Clustering
-    icon: fa-link
+    icon: fa-users
     href: Clustering.html
   - text: Diff expression
-    icon: fa-link
+    icon: fa-table
     href: DE.html
 
 output:

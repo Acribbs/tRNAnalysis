@@ -58,8 +58,8 @@ A heatmap of this distance matrix gives us an overview over similarities and dis
 library(RColorBrewer)
 sampleDists <- dist(t(assay(vsd)))
 samplDistMatrix <- as.matrix(sampleDists)
-rownames(samplDistMatrix) <- meta_data$Condition
-colnames(samplDistMatrix) <- meta_data$Lab_sample
+rownames(samplDistMatrix) <- meta_data$Sample
+colnames(samplDistMatrix) <- NULL
 colors <- colorRampPalette(rev(brewer.pal(9, "Blues")) )(255)
 
 pheatmap(samplDistMatrix, 
