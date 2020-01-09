@@ -800,34 +800,7 @@ def create_coverage(infiles, outfile):
 
     P.run(statement)
 # need to merge coverage?
-'''
-@follows(create_coverage,
-         regex("post_mapping_bams.dir/(\S+)_pileup.tsv"),
-         add_inputs(idx_stats_post),
-         r"\1_top50_coverage.tsv")
-def coverage_plot(infiles, outfile):
-    ''' '''
 
-    coverage, idx = infiles
-
-    ModuleTrna.coverage(idx, coverage, outfile)
-'''
-
-'''
-@follows(count_features)
-@follows(mkdir("plots.dir"))
-@merge(count_features, "plots.dir/feature_count.png")
-def feature_count_plot(infiles, outfile):
-    '''''' Create plot of proportion of gene type mapped for each sample''''''
-
-    infiles = ":".join(infiles)
-    statement = """Rscript %(PY_SRC_PATH)s/R/feature_count_plots.r
-                --input=%(infiles)s
-                --output=%(outfile)s
-                """
-    P.run(statement)
-
-'''
 
 @transform(create_coverage,
            regex("post_mapping_bams.dir/(\S+)_pileup.tsv"),
