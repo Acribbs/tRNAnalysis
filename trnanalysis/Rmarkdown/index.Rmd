@@ -19,15 +19,10 @@ Report generated at: `r format(Sys.time(), "%X %x ")` \n
 ## Samtools ##
 
 sam_tools <- read_delim(file = "../multiqc_data/multiqc_samtools_stats.txt", delim = '\t', col_names = TRUE)
-sam_tools <- dplyr::select(sam_tools, c("Sample", "raw_total_sequences", "reads_mapped", "reads_unmapped"))
-sam_tools <- gather(sam_tools, "Mapped/Unmapped", "Number", 3:4)
-sam_tools$`Mapped/Unmapped` <- ifelse(sam_tools$`Mapped/Unmapped` == "reads_mapped", "Mapped", "Unmapped" )
-
-sam_tools$Percentages <- 100*(sam_tools$Number / sam_tools$raw_total_sequences)
-sam_tools$Sample <- gsub("\\.stats$", "", sam_tools$Sample )
+samples <- gsub("\\.stats$", "", sam_tools$Sample )
 ```
 
-Samples: `r unique(sam_tools$Sample)` \n  
+Samples: `r unique(samples)` \n  
 
 # General Information
 
