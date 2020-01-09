@@ -17,6 +17,10 @@ navbar:
   - text: Diff expression
     icon: fa-table
     href: DE.html
+  - text: Coverage
+    icon: fa-globe
+    href: Base_coverage.html
+    
 
 output:
   html_document:
