@@ -232,7 +232,7 @@ for(i in 1:num_samples){
   
   data <- read.table(file_paths[i])
   data_1 <- data %>%  dplyr::group_by(V4)
-  data_1 %>%  summarise_at("V7",sum) %>%  rename(fragment = V4, Count = V7) -> data_1
+  data_1 %>%  summarise_at("V7",sum) %>%  dplyr::rename(fragment = V4, Count = V7) -> data_1
   
   total_reads = sum(data_1$Count)
 
@@ -274,7 +274,7 @@ for(i in 1:num_samples){
   
   data <- read.table(file_paths[i])
   data_1 <- data %>%  dplyr::group_by(V4)
-  data_1 %>%  summarise_at("V7",sum) %>%  rename(fragment = V4, Count = V7) -> data_1
+  data_1 %>%  summarise_at("V7",sum) %>%  dplyr::rename(fragment = V4, Count = V7) -> data_1
   data_1 <- data_1[!data_1$fragment == "tRF-3'",]
   data_1 <- data_1[!data_1$fragment == "tRF-5'",]
   data_1 <- data_1[!data_1$fragment == "tRF-A",]
@@ -322,7 +322,7 @@ for(i in 1:num_samples){
   
   data <- read.table(file_paths[i])
   data_1 <- data %>%  dplyr::group_by(V4)
-  data_1 %>%  summarise_at("V7",sum) %>%  rename(fragment = V4, Count = V7) -> data_1
+  data_1 %>%  summarise_at("V7",sum) %>%  dplyr::rename(fragment = V4, Count = V7) -> data_1
   data_1 <- data_1[!data_1$fragment == "tRH-3'",]
   data_1 <- data_1[!data_1$fragment == "tRH-DA",]
   data_1 <- data_1[!data_1$fragment == "tRH-DTA",]

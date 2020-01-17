@@ -86,8 +86,8 @@ Alignment metrics from samtools stats
 sam_table <- read_tsv("../multiqc_data/multiqc_samtools_stats.txt")
 sam_table$Sample <- gsub("\\.stats$", "", sam_table$Sample)
 sam_table_subset <- sam_table %>% dplyr::select(contains("Sample"),  contains("total_sequences"), contains("reads"), contains("bases"), contains("pairs"), -contains("percent")) %>%
-  rename(total_sequences = raw_total_sequences, `mapped_paired` = reads_mapped_and_paired, `MQ0_reads` = reads_MQ0 ) %>% rename_all(~sub('reads_', '', .x)) %>%
-  rename_all(~sub('^pairs[^_]*_[^_]*_', '', .x))
+  dplyr::rename(total_sequences = raw_total_sequences, `mapped_paired` = reads_mapped_and_paired, `MQ0_reads` = reads_MQ0 ) %>% rename_all(~sub('reads_', '', .x)) %>%
+  dplyr::rename_all(~sub('^pairs[^_]*_[^_]*_', '', .x))
 datatable(sam_table_subset)
 ```
 
