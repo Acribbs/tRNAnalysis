@@ -1,5 +1,5 @@
 ---
-title: "Read QC Report"
+title: "Read quality control"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 author: "`r Sys.info()[[7]]`"
 output:
@@ -25,8 +25,6 @@ library(RColorBrewer)
 library(plotly)
 ```
 
-Report generated based on data located in `r getwd()` \  
-
 ```{r samtool, include=FALSE}
 ## Samtools ##
 
@@ -37,11 +35,10 @@ sam_tools$`Mapped/Unmapped` <- ifelse(sam_tools$`Mapped/Unmapped` == "reads_mapp
 
 sam_tools$Percentages <- 100*(sam_tools$Number / sam_tools$raw_total_sequences)
 sam_tools$Sample <- gsub("\\.stats$", "", sam_tools$Sample )
+
+## Samples: `r unique(sam_tools$Sample)` \n  
 ```
 
-Samples: `r unique(sam_tools$Sample)` \n  
-
-Report generated at: `r format(Sys.time(), "%X %x ")` \n 
 
 # General stats
 MultiQC general stats from Bowtie, featureCounts, FastQC and Samtools. 
@@ -89,8 +86,8 @@ Alignment metrics from samtools stats
 sam_table <- read_tsv("../multiqc_data/multiqc_samtools_stats.txt")
 sam_table$Sample <- gsub("\\.stats$", "", sam_table$Sample)
 sam_table_subset <- sam_table %>% dplyr::select(contains("Sample"),  contains("total_sequences"), contains("reads"), contains("bases"), contains("pairs"), -contains("percent")) %>%
-  rename(total_sequences = raw_total_sequences, `mapped_paired` = reads_mapped_and_paired, `MQ0_reads` = reads_MQ0 ) %>% rename_all(~sub('reads_', '', .x)) %>%
-  rename_all(~sub('^pairs[^_]*_[^_]*_', '', .x))
+  dplyr::rename(total_sequences = raw_total_sequences, `mapped_paired` = reads_mapped_and_paired, `MQ0_reads` = reads_MQ0 ) %>% rename_all(~sub('reads_', '', .x)) %>%
+  dplyr::rename_all(~sub('^pairs[^_]*_[^_]*_', '', .x))
 datatable(sam_table_subset)
 ```
 

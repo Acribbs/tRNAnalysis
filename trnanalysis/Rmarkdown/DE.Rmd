@@ -3,6 +3,8 @@ title: "Differential expression"
 output: html_document
 ---
 
+Differential expression between control samples and test/stimulated samples. Wald test or likelihood ratio test (LRT) test used to analyse differential expression between conditions. 
+
 ```{r, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(cache=TRUE, warning=FALSE, message=FALSE)
 source('functions.R')
@@ -80,6 +82,7 @@ for (i in design_files) {
 ```
 
 # Model fitting
+=======
 
 This section of the report describes figures that can be used to assess how well the DESeq2 model has fitted the data.
 
@@ -97,7 +100,6 @@ for (i in design_files){
 
   cat('\n\n')
 } 
-
 ```
 
 
@@ -115,7 +117,6 @@ for (i in design_files){
   print(plt)
   cat('\n\n')
 } 
-
 ```
 
 ## Volcano plots {.tabset .tabset-fade}
@@ -139,8 +140,6 @@ for (i in design_files){
 ## Results tables {.tabset .tabset-fade}
 
 The folowing results tables show the significant genes. Filtering has been performed with a log2 fold change +/- 2.
-
-
 
 
 ```{r data.setup}

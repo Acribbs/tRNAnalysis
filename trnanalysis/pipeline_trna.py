@@ -194,9 +194,10 @@ def process_gtf(infiles, outfile):
 
     statement = """
                 zcat < %(repeats)s | cgat gff2bed --set-name=class |
-                cgat bed2gff --as-gtf | gzip > gtf.dir/rna.gtf.gz &&
-                zcat < %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | gzip > gtf.dir/ensembl.gtf.gz &&
-                zcat < gtf.dir/rna.gtf.gz < gtf.dir/ensembl.gtf.gz > %(outfile)s
+                cgat bed2gff --as-gtf  > gtf.dir/rna.gtf &&
+                zcat < %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | awk '{ if($1 !~ /^#/){print "chr"$0} else{print $0} }' > gtf.dir/ensembl.gtf &&
+                cat  gtf.dir/rna.gtf  gtf.dir/ensembl.gtf > %(outfile)s &&
+                rm -rf gtf.dir/rna.gtf gtf.dir/ensembl.gtf
                 """
 
     P.run(statement)
@@ -273,77 +274,6 @@ def count_reads(infile, outfile):
 
     P.run(statement)
 
-# Add inputs adds all samples as infiles
-@follows(mkdir("genome_statistics.dir"))
-@transform(map_with_bowtie,
-           regex("mapping.dir/(\S+).bam"),
-           add_inputs(count_reads, get_repeat_gff),
-           r"genome_statistics.dir/\1.readstats")
-def build_bam_stats(infiles, outfile):
-    '''count number of reads mapped, duplicates, etc.
-    Excludes regions overlapping repetitive RNA sequences
-    Parameters
-    ----------
-    infiles : list
-    infiles[0] : str
-       Input filename in :term:`bam` format
-    infiles[1] : str
-       Input filename with number of reads per sample
-    outfile : str
-       Output filename with read stats
-    annotations_interface_rna_gtf : str
-        :term:`PARMS`. :term:`gtf` format file with repetitive rna
-    '''
-
-    job_memory = "32G"
-
-    # Only one sample
-    if len(infiles)==3:
-        bamfile, readsfile, rna_file = infiles
-    # If there are multiple samples, programme specifies which .nreads file to use, by matching name to bam file
-    else:
-        bamfile = infiles[0]
-        rna_file = infiles[-1]
-        # Split file name up into directory and file name(/), then further split up by file name and file type and take file name (.)
-        bam_name = bamfile.split('/')[1].split('.')[0]
-        for i in range(1,len(infiles)-1):
-            nread_name = infiles[i].split('/')[1].split('.')[0]
-            if bam_name ==  nread_name:
-                readsfile = infiles[i]
-                break
-            else:
-                continue
-
-    nreads = ModuleTrna.getNumReadsFromReadsFile(readsfile)
-    track = P.snip(os.path.basename(readsfile),
-                   ".nreads")
-
-    # if a fastq file exists, submit for counting
-    if os.path.exists(track + ".fastq.gz"):
-        fastqfile = track + ".fastq.gz"
-    elif os.path.exists(track + ".fastq.1.gz"):
-        fastqfile = track + ".fastq.1.gz"
-    else:
-        fastqfile = None
-
-    if fastqfile is not None:
-        fastq_option = "--fastq-file=%s" % fastqfile
-    else:
-        fastq_option = ""
-
-    statement = '''
-    cgat bam2stats
-         %(fastq_option)s
-         --force-output
-         --mask-bed-file=%(rna_file)s
-         --ignore-masked-reads
-         --num-reads=%(nreads)i
-         --output-filename-pattern=%(outfile)s.%%s
-    < %(bamfile)s
-    > %(outfile)s
-    '''
-
-    P.run(statement)
 
 @follows(mkdir("genome_statistics.dir"))
 @transform(map_with_bowtie,
@@ -870,34 +800,7 @@ def create_coverage(infiles, outfile):
 
     P.run(statement)
 # need to merge coverage?
-'''
-@follows(create_coverage,
-         regex("post_mapping_bams.dir/(\S+)_pileup.tsv"),
-         add_inputs(idx_stats_post),
-         r"\1_top50_coverage.tsv")
-def coverage_plot(infiles, outfile):
-    ''' '''
 
-    coverage, idx = infiles
-
-    ModuleTrna.coverage(idx, coverage, outfile)
-'''
-
-'''
-@follows(count_features)
-@follows(mkdir("plots.dir"))
-@merge(count_features, "plots.dir/feature_count.png")
-def feature_count_plot(infiles, outfile):
-    '''''' Create plot of proportion of gene type mapped for each sample''''''
-
-    infiles = ":".join(infiles)
-    statement = """Rscript %(PY_SRC_PATH)s/R/feature_count_plots.r
-                --input=%(infiles)s
-                --output=%(outfile)s
-                """
-    P.run(statement)
-
-'''
 
 @transform(create_coverage,
            regex("post_mapping_bams.dir/(\S+)_pileup.tsv"),
@@ -911,7 +814,7 @@ def coverage_plot(infile, outfile):
     P.run(statement)
 
 
-@follows(strand_specificity, count_reads, count_features, build_bam_stats,
+@follows(strand_specificity, count_reads, count_features,
          full_genome_idxstats, build_samtools_stats, genome_coverage,
          bowtie_index_artificial, index_trna_cluster, remove_reads,
          keep_mature_trna, merge_idx_stats, create_coverage, filter_vcf, merge_features, profile_trna, trna_calculate_end, fragment_coverage)

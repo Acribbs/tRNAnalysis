@@ -1,0 +1,70 @@
+---
+title: "Coverage and variant calling"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "`r Sys.info()[[7]]`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    theme: yeti
+---
+
+Plots to look at coverage for each tRNA cluster.
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+knitr::opts_chunk$set(cache=FALSE, warning=FALSE, message=FALSE)
+library("tidyverse")
+library("ggpubr")
+library(plotly)
+```
+
+```{r get_samples, include = FALSE}
+sam_tools <- read_delim(file = "../multiqc_data/multiqc_samtools_stats.txt", delim = '\t', col_names = TRUE)
+samples <- gsub("\\.stats$", "", sam_tools$Sample )
+num_samples <- length(samples)
+```
+
+# Mature tRNA coverage maps {.tabset}
+Top 25 clusters shown.
+
+```{r, results='asis', echo = FALSE}
+# Dynamically create tabs for each sample ad hoc.
+
+for(i in 1:num_samples){
+
+  sample_name <- samples[i]
+  file_2 <- read_tsv(file= paste("../post_mapping_bams.dir/", sample_name, "_trna.idxstats", sep = "") , col_names =FALSE)
+  file_3 <- read_tsv(file= paste("../post_mapping_bams.dir/", sample_name, "_pileup.tsv", sep = "") , col_names =TRUE, skip = 3)
+
+  file_3 <- dplyr::filter(file_3, FILTER=="PASS")
+  pile_up <- file_3 %>% dplyr::rename(tRNA_cluster = `#CHROM`, Position = POS)
+  pile_up$count <-  as.numeric(stringr::str_replace(pile_up$post_mapping, "0/1:",  "") )
+  max_count <- max(pile_up$count)
+  pile_up$coverage <- 100*(pile_up$count/max_count) # Coverage as a percentage of the max number of reads for a base in the sample
+    
+  colnames(file_2) <- c("tRNA_cluster", "sequence_length", "number_mapped_reads", "placed_unmapped_reads")
+  idx_stats <- file_2 %>% arrange(desc(number_mapped_reads))
+    
+  pileup_idx_joined <- plyr::join(idx_stats[1:25,],pile_up, by = "tRNA_cluster", type = "left")  
+  pileup_idx_joined$tRNA_cluster <- factor(pileup_idx_joined$tRNA_cluster, levels = unique(pileup_idx_joined$tRNA_cluster)[order(pileup_idx_joined$number_mapped_reads)])
+
+  coverage_plot <- ggplot(data = pileup_idx_joined, aes(x= Position, y = tRNA_cluster, color = REF)) + 
+  geom_point(aes(size = coverage)) + scale_size_continuous(range = c(0,2)) +theme_bw() + labs(x= "Position in tRNA", y = "Cluster") 
+  
+  #set_palette(coverage_plot, "lancet")
+
+  cat("##", sample_name," \n")
+
+  print(coverage_plot)
+  #ggplotly(coverage_plot)
+  cat(" \n\n")
+
+}
+
+# should dynamically create plots
+
+```
+
+# 
+
