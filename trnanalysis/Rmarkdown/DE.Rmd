@@ -25,7 +25,7 @@ params <- read_yaml("../pipeline.yml")
 ```{r imports, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
 
 
-design_files <- list.files(pattern = "../design_")
+design_files <- list.files(path="..",pattern = "design_")
 
 if (file.exists("../merged_idxstats.txt.gz")) {
   df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
@@ -35,12 +35,13 @@ if (file.exists("../merged_idxstats.txt.gz")) {
 }
 
 
-if (file.exists(design_files[1])) {
+if (file.exists(paste0("../", design_files[1]))) {
   for (i in design_files){
-  meta_data <- read.table(i, sep=",", header = TRUE) 
-  rownames(meta_data) <- meta_data$Sample
-  df_mRNA = df_mRNA[,rownames(meta_data)]
-  all(rownames(meta_data) %in% colnames(df_mRNA))
+  meta.loc <- paste0("../", i)
+  meta_data <- read.table(meta.loc, sep=",", header = TRUE) 
+  rownames(meta_data) <- paste0(meta_data$Sample, "_trna")
+  df_mRNA_tmp = df_mRNA[,rownames(meta_data)]
+  all(rownames(meta_data) %in% colnames(df_mRNA_tmp))
   assign(paste("meta_data", i, sep = "."), meta_data)
   }
 } else {
@@ -86,23 +87,6 @@ for (i in design_files) {
 
 This section of the report describes figures that can be used to assess how well the DESeq2 model has fitted the data.
 
-## Dispersion {.tabset .tabset-fade}
-
-Plotting the dispersion estimates is a useful diagnostic. The dispersion plot below is typical, with the final estimates shrunk from the gene-wise estimates towards the fitted estimates. Some gene-wise estimates are flagged as outliers and not shrunk towards the fitted value, (this outlier detection is described in the manual page for estimateDispersionsMAP). The amount of shrinkage can be more or less than seen here, depending on the sample size, the number of coefficients, the row mean and the variability of the gene-wise estimates.
-
-
-```{r, results='asis', echo = FALSE}
-for (i in design_files){
-  name <-  gsub(".csv","",i)
-  dds <- get(gsub("SAMPLE_FILE",i , "dds.SAMPLE_FILE"))
-  cat("### ",name,"\n")
- plotDispEsts(dds)
-
-  cat('\n\n')
-} 
-```
-
-
 ## MA plots {.tabset .tabset-fade}
 
 In DESeq2, the function plotMA shows the log2 fold changes attributable to a given variable over the mean of normalized counts for all the samples in the DESeqDataSet. Points will be colored red if the adjusted p value is less than 0.01. Points which fall out of the window are plotted as open triangles pointing either up or down.
@@ -139,8 +123,7 @@ for (i in design_files){
 
 ## Results tables {.tabset .tabset-fade}
 
-The folowing results tables show the significant genes. Filtering has been performed with a log2 fold change +/- 2.
-
+The results tables for the significant and full differential expression for tRNAs are output in the results/ directory of the Report.dir folder.
 
 ```{r data.setup}
 new_list <- list()
