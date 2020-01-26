@@ -1,0 +1,35 @@
+.. _getting_started-Output:
+
+======================
+The tRNAnalysis report
+======================
+
+Before running the report
+-------------------------
+
+For the report to run successfully you will need to set up a design file (Actually,
+you can have multiple design files in there and all will run simultaneously)
+that controls how the differential expression model and contract will be
+performed.
+
+The file has the naming convention design_<test>_<control>_<test>_<column>.csv
+
+* `<test>` - refers to the test that you plan to run. There are two options "ltr" or "wald".
+* `<control>` - This is the name of your control condition i.e. the samples you want to test against. This should match on of the samples in the <column> of the file.
+* `<test>` - This is the name of the test condition. This should match with one of the samples in the <column> of the file
+* `<column>` - This is a column that you want to use for your testing in the design_* file
+
+tRNAnalysis runs DEseq2 under the hood so you can refer to the bioconductor help
+pages for further information on how to set up contrasts for your data.
+
+
+Opening the report
+------------------
+
+Once you have ran the software with the command `trnanalysis trna make full` and
+`trnanalysis trna make build_report`, a final html report should have been
+generated.
+
+In order to access this report please open the file called FinalReport.html
+which will be located within the directory that you ran tRNAnalysis. This
+should open the report in your preferred browser.
