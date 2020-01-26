@@ -6,7 +6,6 @@ output: html_document
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 knitr::opts_chunk$set(cache=FALSE, warning=FALSE, message=FALSE)
 source('functions.R')
-library(org.Hs.eg.db)
 library(DESeq2)
 library(pheatmap)
 library(dplyr)
