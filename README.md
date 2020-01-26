@@ -15,34 +15,47 @@ This workflow was generated as a response to not being able to effectively analy
 
 Our pipeline can be used for evaluating the levels of small RNAs in a sample, but provides detailed analysis of tRNAs, with particular emphasis on tRNA fragment analysis.The pipeline is in constant development and further features will be added in the future. For example, we will extend our pipeline to perform detailed anaysis of miRNAs and plan to write an R shiny framework for interactive report features.
 
+## Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+* You have installed the latest version of conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anadonda](https://anaconda.org))
+* You have a Linux or Mac machine. tRNAnalysis has been tested on Redhat linux and OSX Mojave.
+* You have read the [documentation](https://trnanalysis.readthedocs.io/en/latest/)
+* You have read the [preprint](https://www.biorxiv.org/content/10.1101/655829v1?rss=1)
+
 ## Documentation
 
 Further help that introduces tRNAnalysis and provides a tutorial of how to run example
 code can be found at [read the docs](https://trnanalysis.readthedocs.io/en/latest/)
 
-## Installation
+## Installation of tRNAnalysis
 
 
 ### Conda installation
 
-The preferred method for installing tRNAnalysis is through [Conda](https://conda.io). However, at the moment we are experiencing issues with a broken dependancy so I would suggest either installation using pip and manually install dependancies (although there are a lot)
-or more easily, use the linux environment in the **Conda environment** section.
+The preferred method for installing tRNAnalysis using [Conda](https://conda.io), through the [bioconda](https://bioconda.github.io) channel.
 
-To install trnanalysis using conda::
+We have been experiencing issues with installation because of channel prioirities. Bioconda recommend that the channel priority for conda be set by runnig the following in the terminal::
+
+
+	conda config --add channels defaults
+	conda config --add channels bioconda
+	conda config --add channels conda-forge
+
+Then tRNAnalysis can be installed as follows::
     
+    conda create -n trnanalysis
+    conda activate trnanalysis
     conda install -c bioconda trnanalysis
+    
+Please look at 'previous installation issues' of the documentation for common installation issues, if you come acorss your own then please fell free to raise an [issue](https://github.com/Acribbs/tRNAnalysis/issues). 
 
-### Conda environment
+### Conda solving issues 
 
 Conda is an awesome project, however it can suffer from significant issues relating to how long it takes the solver to
 fix installation issues. For more information regarding these conda issues please see [bioconda issues](https://github.com/conda/conda/issues/7239).
 
-In order to try and speed things up we have provided a conda environment for installation. Currently only linux is supported and it can
-be installed by doing the following::
-
-    wget https://raw.githubusercontent.com/Acribbs/tRNAnalysis/master/conda/environments/trnanalysis-linux.yml
-    conda env create -f trnanalysis-linux.yml 
-    conda activate trnanalysis-env
+Solving issues are unfortiunately out of our hands and you shouyld follow recomendations from bioconda. It may be that you will need to install through pip or manually install the package following the instructions below. 
 
 ### Pip installation
 
@@ -62,6 +75,8 @@ Alternatively, you can manusally install tRNAnalysis by::
     
 ## Usage
 
+Further usage instructions can be accessed in the [documentation](https://trnanalysis.readthedocs.io/en/latest/).
+
 Run the ``trnanalysis --help`` command view the help documentation for how to run tRNAnalysis.
 
 To run the main trnanalysis pipeline run::
@@ -74,5 +89,6 @@ for the tRNA analysis run::
     trnanalysis trna make build_report -v5
     
 Running locally or on a cluster - the default setting to run trnanalysis is on a cluster, with SLURM, SGC, Torque and PBS/pro
-currently supported. However, if you dont have access to a cluster then tRNAnalsysis can be executed locally by adding `--no-cluster` as a 
-commandline argument. 
+currently supported. However, if you dont have access to a cluster then tRNAnalsysis can be executed locally by adding `--no-cluster` as a commandline argument::
+
+	trnanalysis trna make full -v5 --no-cluster
