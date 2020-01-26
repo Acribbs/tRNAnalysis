@@ -24,82 +24,120 @@ params <- read_yaml("../pipeline.yml")
 
 ```{r imports, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
 
-df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1, check.names=FALSE)
 
-colnames(df_mRNA) <- gsub("_trna", "", x = colnames(df_mRNA), fixed = T)
-meta_data <- read.table("../meta_data.csv", sep=",", header = TRUE)
+design_files <- list.files(path="..",pattern = "design_")
 
-rownames(meta_data) <- meta_data$Sample
-df_mRNA = df_mRNA[,rownames(meta_data)]
+if (file.exists("../merged_idxstats.txt.gz")) {
+  df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
+  colnames(df_mRNA) <- gsub(".", "-", x = colnames(df_mRNA), fixed = T)
+} else {
+  print("Please add featurecounts.tsv.gz into the project folder as it seems to be missing")
+}
 
-all(rownames(meta_data) %in% colnames(df_mRNA))
+
+if (file.exists(paste0("../", design_files[1]))) {
+  for (i in design_files){
+  meta.loc <- paste0("../", i)
+  meta_data <- read.table(meta.loc, sep=",", header = TRUE) 
+  rownames(meta_data) <- paste0(meta_data$Sample, "_trna")
+  df_mRNA_tmp = df_mRNA[,rownames(meta_data)]
+  all(rownames(meta_data) %in% colnames(df_mRNA_tmp))
+  assign(paste("meta_data", i, sep = "."), meta_data)
+  }
+} else {
+    print("No design files were detected please add a file called design_<test>_<control>_<test>_<column>.csv. Please refer to documentation on github for more ifnormation")
+  }
+
 ```
 
 
 ```{r , message=FALSE, include=FALSE}
 ## Set up the DESeq2 object
-# Decide if LRT or Wald test is to be ran
-if (params$diff_eprs$model == "Wald") {
-  res <- run_deseq2(as.data.frame(df_mRNA), meta_data, control=params$Wald$control, test=params$Wald$test, value=params$Wald$value, design=params$diff_eprs$design)
-  de_test <- "Wald"
-} else{
-  res <- run_deseq2_LRT(as.data.frame(df_mRNA), meta_data, design=params$diff_eprs$design,
-                        full=params$LRT$full, reduced=params$LRT$reduced)
-  de_test <- "LRT"
+## design_<test>_<control>_<test>_<column>.csv
+for (i in design_files) {
+  x <- strsplit(i, "_")
+  stat.test <- x[[1]][2]
+  control <- x[[1]][3]
+  test <- x[[1]][4]
+  value <- x[[1]][5]
+  value <- gsub(".csv","",value)
+  meta_data <- get(gsub("SAMPLE_FILE",i , "meta_data.SAMPLE_FILE"))
+  model <- as.character(meta_data$model[[1]])
+  
+  if ("wald" == stat.test){
+    deseq_results <- run_deseq2(as.data.frame(df_mRNA), meta_data, control = control, test=test, value=value, model = model)
+
+  } else {
+    reduced_model <- as.character(meta_data$reduced[[1]])
+      deseq_results <- run_deseq2_lrt(as.data.frame(df_mRNA), meta_data, control = control, test=test, value=value, model = model, reduced = reduced_model)
+    }
+  
+  res = deseq_results@res
+  dds = deseq_results@dds
+  assign(paste("res", i, sep = "."), res)
+  assign(paste("dds", i, sep = "."), dds)
 }
 
 
 
 ```
 
-# Results - summary
-`r de_test` test used for DE analysis. This can be changed in the pipeline.yml file. 
+# Model fitting
+=======
 
-```{r , echo=FALSE}
-summary(res, alpha=0.01)
+This section of the report describes figures that can be used to assess how well the DESeq2 model has fitted the data.
 
-res_output<- as.data.frame(res)
-write.csv(res_output, file="res.csv")
+## MA plots {.tabset .tabset-fade}
+
+In DESeq2, the function plotMA shows the log2 fold changes attributable to a given variable over the mean of normalized counts for all the samples in the DESeqDataSet. Points will be colored red if the adjusted p value is less than 0.01. Points which fall out of the window are plotted as open triangles pointing either up or down.
+
+
+```{r, results='asis', echo = FALSE}
+for (i in design_files){
+  name <-  gsub(".csv","",i)
+  res <- get(gsub("SAMPLE_FILE",i , "res.SAMPLE_FILE"))
+  cat("### ",name,"\n")
+  plt <- DESeq2::plotMA(res)
+  print(plt)
+  cat('\n\n')
+} 
 ```
 
-Download significant results (p < 0.01):
-<a href="res.csv" download=""><button class="btn"><i class="fa fa-download"></i> Download</button></a>
+## Volcano plots {.tabset .tabset-fade}
 
-# Results - full table
 
-```{r, echo = FALSE}
-datatable(res_output)
+
+```{r, results='asis', echo = FALSE}
+
+for (i in design_files){
+  name <-  gsub(".csv","",i)
+  res <- get(gsub("SAMPLE_FILE",i , "res.SAMPLE_FILE"))
+  cat("### ",name,"\n")
+  plt <- plot_volcano(res)
+  print(plt)
+  cat('\n\n')
+} 
+
+
 ```
 
+## Results tables {.tabset .tabset-fade}
 
-# MA plot
+The results tables for the significant and full differential expression for tRNAs are output in the results/ directory of the Report.dir folder.
 
-```{r MA, echo = FALSE}
-DESeq2::plotMA(res)
-```
-
-
-# Volcano plot
-
-```{r volcano, echo=FALSE}
-test <- as.data.frame(res)
-test <- test %>% 
-  rownames_to_column("SYMBOL")
-
-mutateddf <- dplyr::mutate(test, sig=ifelse(res$padj<0.01, "padj<0.01", "Not Sig")) #Will have different colors depending on significance
-input <- cbind(gene=rownames(mutateddf), mutateddf )
-input <- input %>% 
-  arrange(input$padj)
-
-symbol_data <- head(input, 10)
-
-#convert the rownames to a column
-volc = ggplot(input, aes(log2FoldChange, -log10(padj))) + #volcanoplot with log2Foldchange versus pvalue
-    geom_point(aes(col=sig)) + #add points colored by significance
-geom_point(data=symbol_data, aes(log2FoldChange, -log10(padj)), colour="red") 
-
-volc+geom_text_repel(data=symbol_data, aes(label=`SYMBOL`)) + scale_colour_Publication() + theme_bw()#adding text for the genes
-
+```{r data.setup}
+new_list <- list()
+names <- c()
+for (i in design_files){
+  name.start <-  gsub(".csv","",i)
+  res <- get(gsub("SAMPLE_FILE",i , "res.SAMPLE_FILE"))
+  name <- paste0(name.start)
+  dt <- filter_genes(as.data.frame(res), name=name)
+  table <- dt@sig
+  new_list[[paste0("dt_",name,sep="")]] <- table
+  names <- c(names, name)
+} 
+df <- data.frame(cbind(new_list, classification=names))
 
 ```
 

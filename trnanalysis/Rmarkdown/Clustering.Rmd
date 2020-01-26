@@ -6,68 +6,107 @@ output: html_document
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 knitr::opts_chunk$set(cache=FALSE, warning=FALSE, message=FALSE)
 source('functions.R')
-library(org.Hs.eg.db)
 library(DESeq2)
 library(pheatmap)
 library(dplyr)
 library(yaml)
+library(RColorBrewer)
 ```
 
+
 ```{r , echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
-params <- read_yaml("../pipeline.yml")
-df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1, check.names=FALSE)
 
-colnames(df_mRNA) <- gsub("_trna", "", x = colnames(df_mRNA), fixed = T)
-meta_data <- read.table("../meta_data.csv", sep=",", header = TRUE)
+design_files <- list.files(path="..",pattern = "design_")
 
-rownames(meta_data) <- meta_data$Sample
-df_mRNA = df_mRNA[,rownames(meta_data)]
+if (file.exists("../merged_idxstats.txt.gz")) {
+  df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)
+  colnames(df_mRNA) <- gsub(".", "-", x = colnames(df_mRNA), fixed = T)
+} else {
+  print("Please add featurecounts.tsv.gz into the project folder as it seems to be missing")
+}
 
-all(rownames(meta_data) %in% colnames(df_mRNA))
+if (file.exists(paste0("../", design_files[1]))) {
+  for (i in design_files){
+  table <- paste0("../", i)
+  meta_data <- read.table(table, sep=",", header = TRUE) 
+  rownames(meta_data) <- meta_data$Sample
+  rownames(meta_data) <- paste0(meta_data$Sample, "_trna")
+  df_mRNA = df_mRNA[,rownames(meta_data)]
+  all(rownames(meta_data) %in% colnames(df_mRNA))
+  assign(paste("meta_data", i, sep = "."), meta_data)
+  }
+} else {
+    print("No design files were detected please add a file called design_<test>_<control>_<test>_<column>.csv. Please refer to documentation on github for more ifnormation")
+}
+
+
 ```
 
 ```{r , include=FALSE}
 
-dds <- run_deseq2_full(df_mRNA, meta_data)
+for (i in design_files) {
+  meta_data <- get(gsub("SAMPLE_FILE",i , "meta_data.SAMPLE_FILE"))
+  model <- as.character(meta_data$model[[1]])
+  dds <- run_deseq2_full(df_mRNA, meta_data, model)
+  assign(paste("dds_full", i, sep = "."), dds)
 
+}
 ```
 
-# Heatmap of counts matrix
+# Heatmap of counts matrix {.tabset .tabset-fade}
 
 To explore a count matrix, it is often instructive to look at it as a heatmap. Below we show how to produce such a heatmap for various transformations of the data. I have plotted a heatmap of the top 200 highly expressed genes to determine if the samples cluster together by condition.
 
 ```{r , echo=FALSE}
-library(pheatmap)
+for (i in design_files) {
+  meta_data <- get(gsub("SAMPLE_FILE",i , "meta_data.SAMPLE_FILE"))
+  dds <- get(gsub("SAMPLE_FILE",i , "dds_full.SAMPLE_FILE"))
+  vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
+  select <- order(rowMeans(counts(dds, normalized=TRUE)), decreasing=TRUE)[1:20]
+  data = colData(dds)[,3]
+  df <- as.data.frame(data)
+  annotation <- data.frame(Var1 = meta_data[[3]], Var2 = meta_data[[2]])
+  rownames(annotation) <- colnames(assay(vsd))
+  name <-  gsub(".csv","",i)
+  cat("### ",name,"\n")
+  pheatmap(assay(vsd)[select,], cluster_rows = FALSE, show_rownames = FALSE,
+           cluster_cols = TRUE, annotation =annotation)
+  cat('\n\n')
+}
 
-vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
-select <- order(rowMeans(counts(dds, normalized=TRUE)), decreasing=TRUE)[1:200]
-df <- as.data.frame(colData(dds)[,"Condition"])
-annotation <- data.frame(Var1 = meta_data$Condition)
-rownames(annotation) <- colnames(assay(vsd))
-
-pheatmap(assay(vsd)[select,], cluster_rows = FALSE, show_rownames = FALSE, cluster_cols = TRUE, annotation =annotation, show_colnames=FALSE)
 ```
 
-# Heatmap of sample-to-sample distances
+
+# Heatmap of sample-to-sample distances {.tabset .tabset-fade}
 
 Another use of the transformed data is sample clustering. Here, we apply the dist function to the transpose of the transformed count matrix to get sample-to-sample distances.
 
 A heatmap of this distance matrix gives us an overview over similarities and dissimilarities between samples. We have to provide a hierarchical clustering hc to the heatmap function based on the sample distances, or else the heatmap function would calculate a clustering based on the distances between the rows/columns of the distance matrix.
 
 ```{r , echo=FALSE}
-library(RColorBrewer)
-sampleDists <- dist(t(assay(vsd)))
-samplDistMatrix <- as.matrix(sampleDists)
-rownames(samplDistMatrix) <- meta_data$Sample
-colnames(samplDistMatrix) <- NULL
-colors <- colorRampPalette(rev(brewer.pal(9, "Blues")) )(255)
+for (i in design_files) {
+  meta_data <- get(gsub("SAMPLE_FILE",i , "meta_data.SAMPLE_FILE"))
+  dds <- get(gsub("SAMPLE_FILE",i , "dds_full.SAMPLE_FILE"))
+  vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
+  sampleDists <- dist(t(assay(vsd)))
+  samplDistMatrix <- as.matrix(sampleDists)
+  rownames(samplDistMatrix) <- meta_data[[2]]
+  colnames(samplDistMatrix) <- meta_data[[3]]
+  colors <- colorRampPalette(rev(brewer.pal(9, "Blues")) )(255)
+  assign(paste("vsd", i, sep = "."), vsd)
+  
 
-pheatmap(samplDistMatrix, 
+  name <-  gsub(".csv","",i)
+  cat("### ",name,"\n")
+  pheatmap(samplDistMatrix, 
          clustering_distance_cols = sampleDists, 
          clustering_distance_rows = sampleDists,
          color = colors)
+  cat('\n\n')
+}
 
 ```
+
 
 # PCA analysis of the samples {.tabset .tabset-fade}
 
@@ -76,5 +115,14 @@ Related to the distance matrix is the PCA plot, which shows the samples in the 2
 ## PCA - group
 
 ```{r , echo=FALSE}
-plotPCA(vsd, intgroup=params$Wald$value)
+for (i in design_files) {
+  meta_data <- get(gsub("SAMPLE_FILE",i , "meta_data.SAMPLE_FILE"))
+  vsd <- get(gsub("SAMPLE_FILE",i , "vsd.SAMPLE_FILE"))
+  one <- colnames(meta_data)[[2]]
+  two <- colnames(meta_data)[[3]]
+  name <-  gsub(".csv","",i)
+  cat("### ",name,"\n")
+  print(plotPCA(vsd, intgroup=c(as.character(one),as.character(two))))
+  cat('\n\n')
+}
 ```
