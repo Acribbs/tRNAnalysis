@@ -33,3 +33,12 @@ generated.
 In order to access this report please open the file called FinalReport.html
 which will be located within the directory that you ran tRNAnalysis. This
 should open the report in your preferred browser.
+
+Understanding the report
+------------------------
+
+The report contains a number of tabs at the top that display the analysis
+performed when the pipeline was ran. All of the report is annotated, which
+should make understanding the report output easier. However, if there are
+sections that you feel could be explained better then please raise an `issue <https://github.com/Acribbs/tRNAnalysis/issues>`_
+on github.

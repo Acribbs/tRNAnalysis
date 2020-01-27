@@ -4,7 +4,7 @@ Welcome to trnanalysis's documentation!
 
 This pipeline was developed to accurately map small RNA sequencing data and then perform
 accurate mapping of tRNA reads and qualitatively analyse the resulting data. trnanalysis
-has an emphasis on profiling nuclear and mitochondrial tRNA fragments. 
+has an emphasis on profiling nuclear and mitochondrial tRNA fragments.
 
 
 .. toctree::
@@ -36,23 +36,24 @@ Indices and tables
    :name: getting_started
    :maxdepth: 1
    :hidden:
-   
+
    getting_started/Installation.rst
    getting_started/Cluster_config.rst
    getting_started/Examples.rst
    getting_started/Tutorial.rst
-   
+   getting_started/Output.rst
+
 .. toctree::
    :caption: Project info
    :name: project_info
    :maxdepth: 1
    :hidden:
-   
+
    project_info/Contributing.rst
    project_info/how_to_contribute.rst
    project_info/FAQ.rst
    project_info/Licence.rst
-   
+
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
