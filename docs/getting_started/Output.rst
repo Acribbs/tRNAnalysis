@@ -1,4 +1,4 @@
-.. _getting_started-Output:
+.. _tRNAnalysis-report:
 
 ======================
 The tRNAnalysis report
