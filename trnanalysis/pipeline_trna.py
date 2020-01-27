@@ -846,7 +846,8 @@ def run_rmarkdown(outfile):
     # Needs to be re-written so that the whole report is now rendered
     statement = '''cp %(RMD_SRC_PATH)s/* Report.dir/ &&
                    cd Report.dir &&
-                   R -e "rmarkdown::render_site()" ''' % locals()
+                   R -e "rmarkdown::render_site()" &&
+                   ln -s Report.dir/Final_report/index.html FinalReport.html''' % locals()
 
     P.run(statement)
 
