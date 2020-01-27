@@ -19,7 +19,8 @@ This pipeline requires the following input:
 
  * a single end fastq file - if you have paired end data we recommend flashing the reads together to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
- * ensembl gtf: we recommend that you download out gtf files that have been sanitised for out pipeline `here <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_.
+ * ensembl gtf: we recommend that you download our gtf files that have been sanitised for this workflow `here <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_. However,
+ you can use your own, if you make sure that all of the chromosomes are listed according to the ensembl annotations (i.e. the chromosomes are named chr1, chr2.. e.c.t.)
 
 
 **Optionally** to make the pipeline run faster you can also use a downloaded tRNAscan-SE output. The most time consuming part of the pipeline is running tScan-SE to identify tRNAs across the genome.
