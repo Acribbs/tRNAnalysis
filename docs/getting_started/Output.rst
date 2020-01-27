@@ -35,6 +35,7 @@ Opening the report
 ------------------
 
 Once you have ran the software with the command::
+
   trnanalysis trna make full
 
 and::
