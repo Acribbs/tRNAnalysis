@@ -26,7 +26,7 @@ The design file should be laid out as follows, with the last model column
 detailing the model that you would like DESeq2 to run for the data:
 
 .. csv-table:: design layout
-   :file: docs/getting_started/design_wald_plac_k10_condition.csv
+   :file: getting_started/design_wald_plac_k10_condition.csv
    :widths: 30, 70
    :header-rows: 1
 
