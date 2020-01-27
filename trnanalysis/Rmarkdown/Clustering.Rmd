@@ -68,7 +68,7 @@ for (i in design_files) {
   annotation <- data.frame(Var1 = meta_data[[3]], Var2 = meta_data[[2]])
   rownames(annotation) <- colnames(assay(vsd))
   name <-  gsub(".csv","",i)
-  cat("### ",name,"\n")
+  cat("## ",name,"\n")
   pheatmap(assay(vsd)[select,], cluster_rows = FALSE, show_rownames = FALSE,
            cluster_cols = TRUE, annotation =annotation)
   cat('\n\n')
@@ -97,7 +97,7 @@ for (i in design_files) {
   
 
   name <-  gsub(".csv","",i)
-  cat("### ",name,"\n")
+  cat("## ",name,"\n")
   pheatmap(samplDistMatrix, 
          clustering_distance_cols = sampleDists, 
          clustering_distance_rows = sampleDists,
