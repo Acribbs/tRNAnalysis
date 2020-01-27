@@ -12,29 +12,23 @@ The following sections describe how to install tRNAnalysis.
 Conda Installation
 ------------------
 
-The our preffered method of installation is using conda. If you dont have conda installed then
+The our preferred method of installation is using conda. If you dont have conda installed then
 please install conda using `miniconda <https://conda.io/miniconda.html>`_ or `anaconda <https://www.anaconda.com/download/#macos>`_.
 
-tRNAnalysis is currently installed using the bioconda channel and the recipe can be found on `github `_.
+We have been experiencing issues with installation because of channel priorities.
+Bioconda recommend that the channel priority for conda be set by running the following in the terminal::
+
+  conda config --add channels defaults
+  conda config --add channels bioconda
+  conda config --add channels conda-forge
+
+tRNAnalysis is currently installed using the bioconda channel and the recipe can be found on `github`_.
 
 To install tRNAnalysis::
 
-    conda install -c bioconda trnanalysis
-
-Conda environment
------------------
-
-Conda is an awesome project, however it can suffer from significant issues relating to how long it takes the solver to
-fix installation issues. For more information regarding these conda issues please see `bioconda issues <https://github.com/conda/conda/issues/7239>`_.
-
-In order to try and speed things up we have provided a conda environment for installation. Currently only linux is supported and it can
-be installed by doing the following::
-
-    wget https://raw.githubusercontent.com/Acribbs/tRNAnalysis/master/conda/environments/trnanalysis-linux.yml
-    conda env create -f trnanalysis-linux.yml
-    conda activate trnanalysis-env
-
-.. _getting_started-Automated:
+  conda create -n trnanalysis
+  conda activate trnanalysis
+  conda install -c bioconda trnanalysis
 
 
 Pip installation
