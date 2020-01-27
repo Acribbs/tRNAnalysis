@@ -34,9 +34,14 @@ detailing the model that you would like DESeq2 to run for the data:
 Opening the report
 ------------------
 
-Once you have ran the software with the command `trnanalysis trna make full` and
-`trnanalysis trna make build_report`, a final html report should have been
-generated.
+Once you have ran the software with the command::
+  trnanalysis trna make full
+
+and::
+
+  trnanalysis trna make build_report
+
+a final html report should have been generated.
 
 In order to access this report please open the file called FinalReport.html
 which will be located within the directory that you ran tRNAnalysis. This
