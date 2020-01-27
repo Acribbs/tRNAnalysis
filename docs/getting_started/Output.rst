@@ -23,13 +23,28 @@ tRNAnalysis runs DEseq2 under the hood so you can refer to the bioconductor help
 pages for further information on how to set up contrasts for your data.
 
 The design file should be laid out as follows, with the last model column
-detailing the model that you would like DESeq2 to run for the data:
+detailing the model that you would like DESeq2 to run for the data.
 
-.. csv-table:: design layout
-   :file: https://www.cgat.org/downloads/public/adam/trnanalysis/design_wald_plac_k10_condition.csv
-   :widths: 30, 70
-   :header-rows: 1
+.. list-table:: design layout
+  :widths: 25 25 25 25
+  :header-rows: 1
 
+  * - Sample
+    - condition
+    - sample_type
+    - model
+  * - NORMAL_10KP_2481_miRNA1
+    - k10
+    - cell1
+    - ~condition
+  * - NORMAL_PLAC_2373_miRNA1
+    - plac
+    - cell1
+    -
+  * - NORMAL_PLAC_2433_miRNA1
+    - plac
+    - cell2
+    -
 
 Opening the report
 ------------------
