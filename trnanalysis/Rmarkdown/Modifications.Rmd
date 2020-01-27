@@ -1,0 +1,31 @@
+---
+title: "Clustering"
+output: html_document
+---
+
+tRNAnalysis performs variant calling that provides information that makes it possible to identify  chemical tRNA modifications.
+
+
+## vcf tables {.tabset .tabset-fade}
+
+We are in the process of deciding how best to display this data in graph form. In the meantime, the data plotted here can be accessed wihtin the variant_calling.dir/.
+
+
+```{r, include=FALSE}
+library(DT)
+# https://github.com/rstudio/DT/issues/67
+# https://stackoverflow.com/questions/39732560/why-does-datatable-not-print-when-looping-in-rmarkdown
+
+full_files <- list.files(path="../variant_calling.dir/",pattern = ".var.flt.vcf")
+
+for (i in full_files){
+  vcf <- tryCatch(read.table(paste0("../variant_calling.dir/",i), sep = "\t", header = FALSE, blank.lines.skip=TRUE), error=function(e) NULL)
+  if (!is.null(vcf)){
+    colnames(vcf) <- c("tRNA","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT","")
+  }
+  
+  cat("### ",i,"\n")
+  DT::datatable(vcf)
+  cat('\n\n')
+}
+```

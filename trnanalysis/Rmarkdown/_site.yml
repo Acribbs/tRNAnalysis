@@ -20,7 +20,9 @@ navbar:
   - text: Coverage
     icon: fa-globe
     href: Base_coverage.html
-    
+  - text: Modifications
+    icon: fa-angle-double-down
+    href: Modifications.html    
 
 output:
   html_document:
