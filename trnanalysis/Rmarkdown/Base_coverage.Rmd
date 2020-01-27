@@ -1,16 +1,9 @@
 ---
 title: "Coverage and variant calling"
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-author: "`r Sys.info()[[7]]`"
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    toc_collapsed: true
-    theme: yeti
+output: html_document
 ---
 
-Plots to look at coverage for each tRNA cluster.
+The following page shows plots show the coverage across the tRNA length from 5' to 3' for the top 25 expressed tRNAs.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 knitr::opts_chunk$set(cache=FALSE, warning=FALSE, message=FALSE)
@@ -26,6 +19,7 @@ num_samples <- length(samples)
 ```
 
 # Mature tRNA coverage maps {.tabset}
+
 Top 25 clusters shown.
 
 ```{r, results='asis', echo = FALSE}
@@ -57,14 +51,13 @@ for(i in 1:num_samples){
   cat("##", sample_name," \n")
 
   print(coverage_plot)
-  #ggplotly(coverage_plot)
+  #print(ggplotly(coverage_plot))
   cat(" \n\n")
 
 }
 
-# should dynamically create plots
+
 
 ```
 
-# 
 
