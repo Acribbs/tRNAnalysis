@@ -8,7 +8,7 @@ Running a pipeline
 
 Running tRNAnalysis is easy using the commandline. If you have installed trnanalysis using conda then
 all the software dependancies should have been installed and you are ready to go. A step by step tutorial
-pipeline can be found here: getting_started-Tutorial_.
+pipeline can be found `here: <https://trnanalysis.readthedocs.io/en/latest/getting_started/Tutorial.html>`_.
 
 .. _getting_started-Intro:
 
@@ -19,7 +19,7 @@ This pipeline requires the following input:
 
  * a single end fastq file - if you have paired end data we recommend flashing the reads together to make a single file or only using the first read of your paired end data.
  * a bowtie indexed genome
- * ensembl gtf: we recomend that you download out gtf files that have been sanitised for out pipeline `here <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_.
+ * ensembl gtf: we recommend that you download out gtf files that have been sanitised for out pipeline `here <https://www.cgat.org/downloads/public/adam/data_trnanalysis/>`_.
 
 
 **Optionally** to make the pipeline run faster you can also use a downloaded tRNAscan-SE output. The most time consuming part of the pipeline is running tScan-SE to identify tRNAs across the genome.
@@ -81,7 +81,7 @@ Fastq naming convention
 
 tRNAanalysis assume that input fastq files follows the following
 naming convention(with the read inserted between the fastq and the gz). The reason
-for this is so that regular expressions do not have to acount for the read within the name.
+for this is so that regular expressions do not have to account for the read within the name.
 It is also more explicit::
 
    sample1-condition-R1.fastq.1.gz
@@ -114,7 +114,7 @@ when running the pipelines. These will modify the way the pipeline in ran.
 
 `- -exceptions`
 
-    Echo exceptions immidietly as they occur.
+    Echo exceptions immediately as they occur.
 
 `-c - -checksums`
 
@@ -147,19 +147,16 @@ reading the logfiles and the error messages on stderr
 (:file:`nohup.out`). See if you can understand the error and guess the
 likely problem (new program versions, badly formatted input, ...). If
 you are able to fix the error, remove the output files of the step in
-which the error occured and restart the pipeline. Processing should
+which the error occurred and restart the pipeline. Processing should
 resume at the appropriate point.
 
 .. note::
 
-   Look out for upstream errors. For example, the pipeline might build
-   a geneset filtering by a certain set of contigs. If the contig
-   names do not match, the geneset will be empty, but the geneset
-   building step might conclude successfully. However, you might get
-   an error in any of the downstream steps complaining that the gene
-   set is empty. To fix this, fix the error and delete the files
-   created by the geneset building step and not just the step that
-   threw the error.
+   Look out for upstream errors. For example, you may find that
+   if the pipeline errors and stops, iut may create the file and
+   when the pipeline is started again, it will move to the next
+   function, despite the previous file being empty. To fix this, delete the files
+   created by the last task ran before restarting the pipeline.
 
 Common errors
 -------------
