@@ -311,6 +311,8 @@ ggplotly(plot)
 
 # tRNA fragment analysis
 
+The tRNA fragments are named according to [Selitsky et al (2015)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-015-0800-0)
+
 ```{r}
 file_paths = list.files(path= "../tRNA-mapping.dir",pattern='_coverage.bed$', recursive=TRUE, full.names = TRUE)
 num_samples <- length(file_paths)
