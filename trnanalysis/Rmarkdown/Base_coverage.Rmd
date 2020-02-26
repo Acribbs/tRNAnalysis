@@ -33,6 +33,8 @@ for(i in 1:num_samples){
 
   file_3 <- dplyr::filter(file_3, FILTER=="PASS")
   pile_up <- file_3 %>% dplyr::rename(tRNA_cluster = `#CHROM`, Position = POS)
+  # cgat bam_pileup2tsv indexes from 0, VCFs index from 1
+  pile_up$Position <- pile_up$Position + 1
   pile_up$count <-  as.numeric(stringr::str_replace(pile_up$post_mapping, "0/1:",  "") )
   max_count <- max(pile_up$count)
   pile_up$coverage <- 100*(pile_up$count/max_count) # Coverage as a percentage of the max number of reads for a base in the sample
@@ -42,6 +44,7 @@ for(i in 1:num_samples){
     
   pileup_idx_joined <- plyr::join(idx_stats[1:25,],pile_up, by = "tRNA_cluster", type = "left")  
   pileup_idx_joined$tRNA_cluster <- factor(pileup_idx_joined$tRNA_cluster, levels = unique(pileup_idx_joined$tRNA_cluster)[order(pileup_idx_joined$number_mapped_reads)])
+
 
   coverage_plot <- ggplot(data = pileup_idx_joined, aes(x= Position, y = tRNA_cluster, color = REF)) + 
   geom_point(aes(size = coverage)) + scale_size_continuous(range = c(0,2)) +theme_bw() + labs(x= "Position in tRNA", y = "Cluster") 
