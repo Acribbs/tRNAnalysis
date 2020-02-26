@@ -14,7 +14,8 @@ library(tidyverse)
 library(DT)
 library(yaml)
 library(ggplot2) 
-library(ggrepel) 
+library(ggrepel)
+library(ggpubr)
 ```
 
 ```{r yaml, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
@@ -54,6 +55,9 @@ if (file.exists(paste0("../", design_files[1]))) {
 ## Set up the DESeq2 object
 ## design_<test>_<control>_<test>_<column>.csv
 for (i in design_files) {
+  if(stringr::str_detect(i, "csv~")){
+    next
+  }
   x <- strsplit(i, "_")
   stat.test <- x[[1]][2]
   control <- x[[1]][3]
@@ -81,8 +85,9 @@ for (i in design_files) {
 
 ```
 
+
 # Model fitting
-=======
+
 
 This section of the report describes figures that can be used to assess how well the DESeq2 model has fitted the data.
 
