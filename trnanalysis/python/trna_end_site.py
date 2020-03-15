@@ -76,7 +76,7 @@ def main(argv=None):
         title = record.title.strip("-")
         length = len(record.sequence)
         dict_trna[title] = length
- 
+
    # For each read in bamfile find end position and then plot this using length of tRNA cluster
     samfile = pysam.AlignmentFile(options.stdin.name, "rb")
     refname = ""
@@ -98,10 +98,10 @@ def main(argv=None):
                 percent = percent.sort_index()
                 percent = pd.DataFrame(percent)
                 percent.rename(columns={0: 'Percent'}, inplace=True)
-            
+
                 # length of each tRNA from fasta
                 length = dict_trna[refname.strip("-")] + 1
-            
+
                 temp_df = pd.DataFrame(0, index=range(1,length), columns=['A'])
                 temp_df = pd.concat([temp_df, percent], axis=1)
                 percent = temp_df.fillna(0)
@@ -111,19 +111,21 @@ def main(argv=None):
                 outfig = refname + ".png"
 
                 percent.to_csv(outfile)
-            
-                g = sns.factorplot(x=percent.index, y="Percent", data=percent,
+
+                percent["index"] = percent.index
+
+                g = sns.factorplot(x="index", y="Percent", data=percent,
                                    size=8, kind="bar", palette="Blues")
                 g.set_xlabels('position from 5\' end')
                 g.set_xticklabels(rotation=90)
                 g.savefig(outfig)
-            
+
                 values = []
                 refname = line.reference_name
 
 
             else:
-            
+
                 refname = line.reference_name
 
     E.stop()
