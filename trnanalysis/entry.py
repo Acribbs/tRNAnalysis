@@ -73,12 +73,9 @@ def main(argv=None):
 
         return
 
-    command = argv[1]
-    command = re.sub("-", "_", command)
-    pipeline = "pipeline_{}".format(command)
+    pipeline = "pipeline_trna"
 
-    # remove 'trnanalysis' from sys.argv
-    del sys.argv[0]
+
 
     (file, pathname, description) = imp.find_module(pipeline, paths)
 
