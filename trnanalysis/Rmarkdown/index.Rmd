@@ -2,7 +2,6 @@
 title: "Introduction"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 author: "`r Sys.info()[[7]]`"
-runtime: shiny
 ---
 
 ```{r setup, include=FALSE}

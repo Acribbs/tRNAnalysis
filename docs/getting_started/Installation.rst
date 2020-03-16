@@ -12,7 +12,7 @@ The following sections describe how to install tRNAnalysis.
 Conda Installation
 ------------------
 
-The our preferred method of installation is using conda. If you dont have conda installed then
+The our preferred method of installation is using conda. If you don't have conda installed then
 please install conda using `miniconda <https://conda.io/miniconda.html>`_ or `anaconda <https://www.anaconda.com/download/#macos>`_.
 
 We have been experiencing issues with installation because of channel priorities.
@@ -59,10 +59,10 @@ Once checked-out, you can get the latest changes via pulling::
 
 .. _getting_started-Additional:
 
-Installing additonal software
+Installing additional software
 -----------------------------
 
-When building your own workflows we recomend using conda to install software into your environment where possible.
+When building your own workflows we recommend using conda to install software into your environment where possible.
 
 This can easily be performed by::
 
