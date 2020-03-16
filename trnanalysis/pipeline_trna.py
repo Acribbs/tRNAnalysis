@@ -16,8 +16,6 @@ Requires:
  * a bowtie indexed genome
  * ensembl gtf: can be downloaded from
 
-segemehl is quite a slow mapper in comparrison to others. However it improves the quality of the tRNA alignment
-
 Pipeline output
 ===============
 
@@ -846,11 +844,15 @@ def run_rmarkdown(outfile):
     # Needs to be re-written so that the whole report is now rendered
     statement = '''cp %(RMD_SRC_PATH)s/* Report.dir/ &&
                    cd Report.dir &&
-                   R -e "rmarkdown::render_site()" &&
-                   ln -s Report.dir/Final_report/index.html FinalReport.html''' % locals()
+                   R -e "rmarkdown::render_site()"''' % locals()
 
     P.run(statement)
 
+    statement = """
+    ln -s Report.dir/Final_report/index.html ./FinalReport.html
+    """
+
+    P.run(statement)
 
 @follows(run_multiqc, run_rmarkdown)
 def build_report():
