@@ -36,12 +36,12 @@ Running tRNAnalysis
 
 Command line usage information is available by running::
 
-   trnanalysis trna --help
+   trnanalysis --help
 
 
 The basic syntax for running tRNAnalysis is::
 
-   trnanalysis trna [workflow options] [workflow arguments]
+   trnanalysis [workflow options] [workflow arguments]
 
 
 ``workflow options`` can be one of the following:
@@ -129,7 +129,7 @@ Building tRNAnalysis reports
 
 Reports are generated using the following command once a the `full` command has completed::
 
-    tranalysis trna make build_report
+    tranalysis make build_report
 
 
 .. _getting_started-Troubleshooting:
@@ -154,7 +154,7 @@ resume at the appropriate point.
 .. note::
 
    Look out for upstream errors. For example, you may find that
-   if the pipeline errors and stops, iut may create the file and
+   if the pipeline errors and stops, it may create the file and
    when the pipeline is started again, it will move to the next
    function, despite the previous file being empty. To fix this, delete the files
    created by the last task ran before restarting the pipeline.
@@ -162,13 +162,13 @@ resume at the appropriate point.
 Common errors
 -------------
 
-One of the most common errors when runnig the tRNAnalysis is::
+One of the most common errors when running the tRNAnalysis is::
 
     GLOBAL_SESSION = drmaa.Session()
     NameError: name 'drmaa' is not defined
 
-This error occurrs because you are not connected to the cluster. Alternatively
-you can run the pipleine in local mode by adding `- -no-cluster` as a command line option.
+This error occurs because you are not connected to the cluster. Alternatively
+you can run the pipeline in local mode by adding `- -no-cluster` as a command line option.
 
 
 

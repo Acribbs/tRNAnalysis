@@ -15,9 +15,9 @@ performed.
 The file has the naming convention design_<test>_<control>_<test>_<column>.csv
 
 * `<test>` - refers to the test that you plan to run. There are two options "ltr" or "wald".
-* `<control>` - This is the name of your control condition i.e. the samples you want to test against. This should match on of the samples in the <column> of the file.
-* `<test>` - This is the name of the test condition. This should match with one of the samples in the <column> of the file
-* `<column>` - This is a column that you want to use for your testing in the design_* file
+* `<control>` - This is the name of your control condition i.e. the samples you want to test against. This should match one of the samples within the <column> of the design file.
+* `<test>` - This is the name of the test condition. This should match with one of the samples in the <column> of the design file
+* `<column>` - This is a column name that you want to use for your testing in the design_* file
 
 tRNAnalysis runs DEseq2 under the hood so you can refer to the bioconductor help
 pages for further information on how to set up contrasts for your data.
@@ -51,11 +51,11 @@ Opening the report
 
 Once you have ran the software with the command::
 
-  trnanalysis trna make full
+  trnanalysis make full
 
 and::
 
-  trnanalysis trna make build_report
+  trnanalysis make build_report
 
 a final html report should have been generated.
 
