@@ -25,7 +25,7 @@ params <- read_yaml("../pipeline.yml")
 ```{r imports, echo=TRUE,warning=FALSE,message=FALSE,error=FALSE, include=FALSE}
 
 
-design_files <- list.files(path="..",pattern = "design_")
+design_files <- list.files(path="..",pattern = "^design_")
 
 if (file.exists("../merged_idxstats.txt.gz")) {
   df_mRNA <- read.table(gzfile("../merged_idxstats.txt.gz"), sep = "\t", header = TRUE, row.names = 1)

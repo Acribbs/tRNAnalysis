@@ -1,5 +1,5 @@
 ---
-title: "Clustering"
+title: "Modifications"
 output: html_document
 ---
 
@@ -21,7 +21,7 @@ full_files <- list.files(path="../variant_calling.dir/",pattern = ".var.flt.vcf"
 for (i in full_files){
   vcf <- tryCatch(read.table(paste0("../variant_calling.dir/",i), sep = "\t", header = FALSE, blank.lines.skip=TRUE), error=function(e) NULL)
   if (!is.null(vcf)){
-    colnames(vcf) <- c("tRNA","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT","")
+    colnames(vcf) <- c("tRNA","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT","blah")
   }
   
   cat("### ",i,"\n")

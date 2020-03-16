@@ -112,8 +112,8 @@ def main(argv=None):
 
                 percent.to_csv(outfile)
             
-                g = sns.factorplot(x=percent.index, y="Percent", data=percent,
-                                   size=8, kind="bar", palette="Blues")
+                g = sns.catplot(x=percent.index, y="Percent", data=percent,
+                                   height=8, kind="bar", palette="Blues")
                 g.set_xlabels('position from 5\' end')
                 g.set_xticklabels(rotation=90)
                 g.savefig(outfig)
