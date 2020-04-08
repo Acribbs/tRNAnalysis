@@ -84,7 +84,7 @@ detect_trnanalysis_installation() {
 } # detect_trnanalysis_installation
 
 
-# configure environment variables 
+# configure environment variables
 # set: INSTALL_HOME, CONDA_INSTALL_DIR, CONDA_INSTALL_TYPE
 get_trnanalysis_env() {
     INSTALL_HOME=$TRAVIS_BUILD_DIR
@@ -227,7 +227,7 @@ conda_install() {
 
     log "installing miniconda"
     bash ${MINICONDA} -b -p $CONDA_INSTALL_DIR
-    source ${CONDA_INSTALL_DIR}/bin/activate
+    source "${CONDA_INSTALL_DIR}/bin/activate"
     hash -r
 
     # install cgat environment
@@ -245,7 +245,7 @@ conda_install() {
     [[ -z ${TRAVIS_BRANCH} ]] && TRAVIS_BRANCH=${INSTALL_BRANCH}
     curl -o env.yml -O https://raw.githubusercontent.com/Acribbs/tRNAnalysis/${TRAVIS_BRANCH}/conda/environments/${CONDA_INSTALL_TYPE}
     conda env create --quiet --file env.yml
-    
+
     conda env export --name ${CONDA_INSTALL_ENV}
 
     # activate trnanalysis environment
@@ -321,18 +321,18 @@ conda_update() {
 
 	echo
 	echo " There was a problem updating the installation. "
-	echo 
+	echo
 	echo " Please submit this issue via Git Hub: "
 	echo " https://github.com/Acribbs/tRNAnalysis/issues "
-	echo 
+	echo
 
-    else 
+    else
 
 	echo
 	echo " All packages were succesfully updated. "
-	echo 
+	echo
 
-    fi 
+    fi
 
 } # conda_update
 
@@ -349,14 +349,14 @@ uninstall() {
 	echo " Please uninstall manually."
 	echo
 	exit 1
-	
+
     else
 
 	rm -rf $UNINSTALL_DIR
 	if [[ $? -eq 0 ]] ; then
 	    echo
 	    echo " CGAT code successfully uninstalled."
-	    echo 
+	    echo
 	    exit 0
 	else
 	    echo
@@ -485,7 +485,7 @@ help_message() {
     echo
     echo " To update the Conda packages:"
     echo " ./install.sh --update [--location </full/path/to/folder/without/trailing/slash>]"
-    echo 
+    echo
     echo " To uninstall the CGAT code:"
     echo " ./install.sh --uninstall [--location </full/path/to/folder/without/trailing/slash>]"
     echo
@@ -629,7 +629,7 @@ if [[ $TRAVIS_INSTALL ]]; then
     conda_install
     conda_test
 
-else 
+else
 
     if [[ $INSTALL_DEVEL ]] ; then
 	conda_install
