@@ -237,7 +237,6 @@ fc_tibble_final <- fc_tibble[, !names(fc_tibble) %in% c("Total")]
 ```{r fc_plot2, echo = FALSE}
 ggplotly(feature_count_plot)
 ```
-`r datatable(fc_tibble_final)`
 
 ### Percentages
 ```{r fc_plot3, echo = FALSE}
