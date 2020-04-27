@@ -81,14 +81,14 @@ Run the ``trnanalysis --help`` command view the help documentation for how to ru
 
 To run the main trnanalysis pipeline run::
 
-    trnanalysis trna make full -v5
+    trnanalysis make full -v5
 
 In order to run and generate the multiQC report to identify read quality and Rmarkdown html report
 for the tRNA analysis run::
 
-    trnanalysis trna make build_report -v5
+    trnanalysis make build_report -v5
     
 Running locally or on a cluster - the default setting to run trnanalysis is on a cluster, with SLURM, SGC, Torque and PBS/pro
 currently supported. However, if you dont have access to a cluster then tRNAnalsysis can be executed locally by adding `--no-cluster` as a commandline argument::
 
-	trnanalysis trna make full -v5 --no-cluster
+	trnanalysis make full -v5 --no-cluster
