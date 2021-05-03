@@ -56,8 +56,7 @@ data_1 %>%  summarise_all(sum) -> data_1
 data_1 <- na.omit(data_1)
 
  
-
-rownames(data_1) <- data_1$V3
+data_1 <- column_to_rownames(data_1, "V3")
 
 data_1$V3 <- NULL
 
@@ -160,8 +159,7 @@ data_1 %>%  summarise_all(sum) -> data_1
 data_1 <- na.omit(data_1)
 
  
-
-rownames(data_1) <- data_1$V4
+data_1 <- column_to_rownames(data_1, "V4")
 
 data_1$V4 <- NULL
 
