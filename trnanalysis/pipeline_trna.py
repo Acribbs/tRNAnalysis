@@ -193,7 +193,7 @@ def process_gtf(infiles, outfile):
     statement = """
                 zcat < %(repeats)s | cgat gff2bed --set-name=class |
                 cgat bed2gff --as-gtf  > gtf.dir/rna.gtf &&
-                zcat < %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | awk '{ if($1 !~ /^#/){print "chr"$0} else{print $0} }' > gtf.dir/ensembl.gtf &&
+                zcat < %(gtf_location)s | cgat gff2bed --set-name=gene_biotype | cgat bed2gff --as-gtf | awk '{ if($1 !~ /^#/){print $0} else{print $0} }' > gtf.dir/ensembl.gtf &&
                 cat  gtf.dir/rna.gtf  gtf.dir/ensembl.gtf > %(outfile)s &&
                 rm -rf gtf.dir/rna.gtf gtf.dir/ensembl.gtf
                 """
