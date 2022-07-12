@@ -114,7 +114,7 @@ def main(argv=None):
 
                 percent["index"] = percent.index
 
-                g = sns.factorplot(x="index", y="Percent", data=percent,
+                g = sns.catplot(x="index", y="Percent", data=percent,
                                    size=8, kind="bar", palette="Blues")
                 g.set_xlabels('position from 5\' end')
                 g.set_xticklabels(rotation=90)
